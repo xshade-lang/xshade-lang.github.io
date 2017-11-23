@@ -116,42 +116,42 @@ const create = () => class Playground extends Component {
     }
 
     // Inject beautify configuration!    
-    ace.define(
-      "ace/ext/beautify",
-      [
-        "require",
-        "exports",
-        "module",
-        "ace/token_iterator",
-        "./beautify/xshade_rules"
-      ], 
-      function(acequire, exports, module) {
-        "use strict";
-        var TokenIterator = acequire("ace/token_iterator").TokenIterator;          
-        var phpTransform  = acequire("./beautify/php_rules").transform;
+    // ace.define(
+    //   "ace/ext/beautify",
+    //   [
+    //     "require",
+    //     "exports",
+    //     "module",
+    //     "ace/token_iterator",
+    //     "./beautify/xshade_rules"
+    //   ], 
+    //   function(acequire, exports, module) {
+    //     "use strict";
+    //     var TokenIterator = acequire("ace/token_iterator").TokenIterator;          
+    //     var phpTransform  = acequire("./beautify/php_rules").transform;
       
-        exports.beautify = function(session) {
-          var iterator = new TokenIterator(session, 0, 0);
-          var token = iterator.getCurrentToken();
+    //     exports.beautify = function(session) {
+    //       var iterator = new TokenIterator(session, 0, 0);
+    //       var token = iterator.getCurrentToken();
       
-          var context = session.$modeId.split("/").pop();
+    //       var context = session.$modeId.split("/").pop();
       
-          var code = phpTransform(iterator, context);
-          session.doc.setValue(code);
-        };
+    //       var code = phpTransform(iterator, context);
+    //       session.doc.setValue(code);
+    //     };
       
-        exports.commands = [{
-          name: "beautify",
-          exec: function(editor) {
-              exports.beautify(editor.session);
-          },
-          bindKey: "Ctrl-Shift-B"
-        }];          
-      }
-    );
-    (function() {
-        ace.acequire(["ace/ext/beautify"], function() {});
-    })();
+    //     exports.commands = [{
+    //       name: "beautify",
+    //       exec: function(editor) {
+    //           exports.beautify(editor.session);
+    //       },
+    //       bindKey: "Ctrl-Shift-B"
+    //     }];          
+    //   }
+    // );
+    // (function() {
+    //     ace.acequire(["ace/ext/beautify"], function() {});
+    // })();
     
     var btnXSC = document.getElementById("xsc_it");
     btnXSC.onclick = function () {  
