@@ -56,7 +56,7 @@ export default function create({ markdown, rust }) {
 
 export function initPlaygroundV1() {
   var playground_script   = document.createElement("script"); 
-  playground_script.src   = "./src/article/playground/playground-v1-script.js"; 
+  playground_script.src   = "./src/article/playground/playground-v1-wasm.js"; 
   var wasm_adapter_script = document.createElement("script"); 
   wasm_adapter_script.src = "./playground.js"; 
 
