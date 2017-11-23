@@ -1,0 +1,79 @@
+{
+  "name": "xshade-lang-github-io",
+  "author": "Andreas Fischer <vengarioth@gmail.com>",
+  "version": "0.1.0",
+  "description": "https://xshade-lang.github.io",
+  "main": "index.js",
+  "scripts": {
+    "uglify": "npm run uglify-app && npm run uglify-worker",
+    "uglify-app": "uglifyjs --compress --mangle --screw-ie8 -o dist/xshade-lang-github-io.js -- dist/xshade-lang-github-io.max.js",
+    "uglify-worker": "uglifyjs --compress --mangle --screw-ie8 -o dist/xshade-lang-github-io-worker.js -- dist/xshade-lang-github-io-worker.max.js",
+    "watch-app": "watchify src/index.js -o dist/xshade-lang-github-io.max.js -t [ babelify ] -t [ stringify  --extensions [.md .rs] ]",
+    "watch-worker": "watchify src/worker.js -o dist/xshade-lang-github-io-worker.max.js -t [ babelify ]",
+    "start": "concurrently \"http-server .\" \"npm run watch-app\" \"npm run watch-worker\"",
+    "bundle": "rimraf dist && mkdirp dist && SET NODE_ENV=production && npm run bundle-app && npm run bundle-worker && npm run uglify",
+    "bundle-app": "browserify src/index.js -o dist/xshade-lang-github-io.max.js -t [ babelify ] -t [ stringify  --extensions [.md .rs] ]",
+    "bundle-worker": "browserify src/worker.js -o dist/xshade-lang-github-io-worker.max.js -t [ babelify ]",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "babel": {
+    "presets": [
+      "es2015",
+      "react"
+    ],
+    "plugins": [
+      "transform-object-rest-spread",
+      "transform-async-to-generator",
+      "transform-class-properties",
+      [
+        "transform-react-jsx"
+      ]
+    ]
+  },
+  "dependencies": {
+    "eventemitter3": "^2.0.0",
+    "numjs": "^0.13.1",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2",
+    "react-markdown": "^2.5.0",
+    "react-syntax-highlighter": "^5.3.0",
+    "redux": "^3.6.0",
+    "seamless-immutable": "^6.1.1",
+    "styled-components": "^1.4.4",
+    "react-ace": "^5.7.0"
+  },
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^7.0.0",
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-es2015-arrow-functions": "^6.22.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babelify": "^7.3.0",
+    "browserify": "^13.1.0",
+    "browserify-shim": "^3.8.14",
+    "concurrently": "^3.4.0",
+    "envify": "^3.4.1",
+    "enzyme": "^2.4.1",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^11.2.0",
+    "eslint-plugin-import": "^1.16.0",
+    "eslint-plugin-jsx-a11y": "^2.2.3",
+    "eslint-plugin-react": "^6.10.3",
+    "http-server": "^0.9.0",
+    "mkdirp": "^0.5.1",
+    "mocha": "2.5.3",
+    "power-assert": "^1.4.2",
+    "react-addons-test-utils": "^15.3.2",
+    "regenerator-runtime": "^0.9.5",
+    "rimraf": "^2.6.1",
+    "sinon": "^1.17.6",
+    "stringify": "^5.1.0",
+    "uglify-js": "^2.7.3",
+    "watchify": "^3.7.0"
+  }
+}
