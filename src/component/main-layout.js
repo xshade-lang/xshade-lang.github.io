@@ -25,20 +25,20 @@ const ContentContainer = styled.div`
     width: 55em;
   }
   @media ${ Desktop } {
-    width: 65em;
+    width: 90%;
   }
 `;
 
-const create = (TopNav, Article) => class MainLayout extends Component {
+const create = (TopNav, Playground) => class MainLayout extends Component {
   render() {
 
-    const articles = this.props.articles.map((article) => (<Article header={article.getHeader()} content={article.getContent()} key={article.getId()} />));
+    const playground = <Playground />
 
     return (
     <AppContainer>
       <TopNav/>
       <ContentContainer>
-        {articles}
+        {playground}
       </ContentContainer>
     </AppContainer>
   );

@@ -5,15 +5,12 @@
   "description": "https://xshade-lang.github.io",
   "main": "index.js",
   "scripts": {
-    "uglify": "npm run uglify-app && npm run uglify-worker",
+    "uglify": "npm run uglify-app",
     "uglify-app": "uglifyjs --compress --mangle --screw-ie8 -o dist/xshade-lang-github-io.js -- dist/xshade-lang-github-io.max.js",
-    "uglify-worker": "uglifyjs --compress --mangle --screw-ie8 -o dist/xshade-lang-github-io-worker.js -- dist/xshade-lang-github-io-worker.max.js",
     "watch-app": "watchify src/index.js -o dist/xshade-lang-github-io.max.js -t [ babelify ] -t [ stringify  --extensions [.md .rs] ]",
-    "watch-worker": "watchify src/worker.js -o dist/xshade-lang-github-io-worker.max.js -t [ babelify ]",
     "start": "concurrently \"http-server .\" \"npm run watch-app\" \"npm run watch-worker\"",
-    "bundle": "rimraf dist && mkdirp dist && SET NODE_ENV=production && npm run bundle-app && npm run bundle-worker && npm run uglify",
+    "bundle": "rimraf dist && mkdirp dist && SET NODE_ENV=production && npm run bundle-app && npm run uglify",
     "bundle-app": "browserify src/index.js -o dist/xshade-lang-github-io.max.js -t [ babelify ] -t [ stringify  --extensions [.md .rs] ]",
-    "bundle-worker": "browserify src/worker.js -o dist/xshade-lang-github-io-worker.max.js -t [ babelify ]",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "babel": {

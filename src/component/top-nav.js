@@ -25,7 +25,7 @@ const create = () => class TopNav extends Component {
   render() {
     return (
       <Container>
-        <Brand>vengarioth.github.io</Brand>
+        <Brand>XShade-Playground</Brand>
       </Container>
     );
   }
