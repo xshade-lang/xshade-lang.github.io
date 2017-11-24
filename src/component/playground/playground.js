@@ -10,14 +10,14 @@ import 'brace/theme/github';
 require('brace/ext/beautify.js') // <script src="../build/src-noconflict/ext-language_tools.js">
 
 const Container = styled.div`
-  width: 98%;
+  width: 100%;
+  height: 700px;
   margin: 0px auto;
   text-align:left;
+  margin-top: 20px;
 `
 
 const Header = styled.h1`
-  padding-top: 0.4em;
-  padding-bottom: 0.1em;
   font-size: 1.4em;
   font-family: ${ Quicksand };
 `;
@@ -25,14 +25,14 @@ const Header = styled.h1`
 const LeftBlock = styled.div`
   float:left;
   display:inline-block;
-  width: 40%;
+  width: 33%;
   height: 600px;
   background:#ddd;
 `;
 
 const CenterBlock = styled.div`
   display:inline-block;
-  width:30%;
+  width:33%;
   height: 600px;
   background:#aaa;  
   margin-left:0px;
@@ -44,7 +44,7 @@ const CenterBlock = styled.div`
 const RightBlock = styled.div`
   float:right;
   display:inline-block;
-  width:  29%;
+  width:  33%;
   height: 600px;
   background:#555;
 `;
@@ -83,10 +83,17 @@ const create = () => class Playground extends Component {
     var beautify_script = document.createElement("beautify");
     beautify_script.src     = "https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/ext-be‌​autify.js";
     beautify_script.charset = "utf-8"
+    var playground_css = document.createElement("link");
+    
+    playground_css.rel   = "stylesheet"; 
+    playground_css.href  = "./src/component/playground/playground.generated.css";
+    playground_css.type  = "text/css";
+    playground_css.media = "screen";
   
     global.document.body.appendChild(playground_script);
     global.document.body.appendChild(wasm_adapter_script);
     global.document.body.appendChild(beautify_script);
+    global.document.head.appendChild(playground_css);
 
     var compileOutputField = document.getElementById("compile_output");
     
@@ -169,12 +176,14 @@ const create = () => class Playground extends Component {
 
   render() {
 
-    const header = this.props.header;
+    const header  = this.props.header;
     const content = this.props.content;
 
     return (
-      <Container class="container">
-        <Header>{header}</Header>
+      <Container class="container">        
+        <Header>
+          {header}
+        </Header>
         <hr/>
         <LeftBlock id="editor_container">
           <AceEditor

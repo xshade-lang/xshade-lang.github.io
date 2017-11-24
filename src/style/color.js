@@ -8,4 +8,4 @@ export const AzureGreen     = '#2EAD7D';
 export const LightAzure     = '#2CCEC5';
 export const BrightAzure    = '#2df5ec';
 export const LightBlue      = '#CCEEFF';
- 
+export const Apricot        = '#FFCC99';

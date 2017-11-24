@@ -1,0 +1,120 @@
+// @import "compass/css3";
+
+@mixin circle($size) {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  left: calc(50% - #{$size/2});
+  top:  calc(50% - #{$size/2});
+  width: $size;
+  height: $size;
+}
+
+$wheel: 80px;
+#wheel, #wheel_umbrella, #wheel_color, #wheel_label {
+  @include circle($wheel);
+}
+#wheel {
+  // overflow: hidden;
+  width: $wheel;
+  height: $wheel;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  margin:5px;
+}
+#wheel_umbrella {
+  position: relative;
+  //-webkit-filter: blur(1.7em);
+  // -webkit-transform: scale(1.35);
+  -webkit-margin-before: 0em;
+  -webkit-margin-after: 0em;
+  -webkit-margin-start: 0px;
+  -webkit-margin-end: 0px;
+  -webkit-padding-start: 0px;
+}
+#wheel_color, #wheel_color:nth-child(n+7):after {
+  clip: rect(0, $wheel, $wheel, #{$wheel/2});
+}
+#wheel_color:after, #wheel_color:nth-child(n+7) {
+  @include circle($wheel);
+  clip: rect(0, #{$wheel/2}, $wheel, 0);
+}
+
+
+// $colors: (#9ED110, #50B517, #179067, #476EAF, #9f49ac, #CC42A2, #FF3BA7, #FF5800, #FF8100, #FEAC00, #FFCC00, #EDE604);
+//  $colors: (
+//    #59AEE3, 
+//    #5AB1D5, 
+//    #5BB0C7, 
+//    #5CADB9, 
+//    #5BA7AB, 
+//    #599D9B, 
+//    #569089, 
+//    #528278, 
+//    #4D7469, 
+//    #48665B, 
+//    #41584E, 
+//    #3A4B42);
+  //  $colors: (
+  //   #000000, 
+  //   #171516, 
+  //   #2D262E, 
+  //   #3B3445, 
+  //   #3e3f5c, 
+  //   #445E73, 
+  //   #478A84, 
+  //   #45A16A, 
+  //   #4EB840, 
+  //   #96CF38, 
+  //   #E6CC2C, 
+  //   #FD691C);
+  $colors: (
+    #9C5E87, 
+    #9A5BA2, 
+    #7B59A8, 
+    #5658AE, 
+    #5181B4, 
+    #4EB3BA, 
+    #4AC3BA, 
+    #45C75A, 
+    #69CD40, 
+    #ACD33A, 
+    #D9B934, 
+    #E06C2E);
+
+@for $i from 0 to length($colors) {
+  #wheel_color:nth-child(#{1+$i}):after {
+    background-color: nth($colors, $i+1);
+    @if $i < 6 {
+      transform: rotate(#{30*(1+$i)}deg);
+      z-index: #{length($colors)-$i};
+    } @else {
+      transform: rotate(#{-30+(30*(1+$i))}deg);
+    }
+  }
+}
+
+#wheel_container {
+  width: 100px;
+  float:left;
+  display:inline-block;
+}
+
+#wheel_container_proportions { 
+}
+
+#wheel_label {
+  font-size: 5em;
+  font-family: 'Nothing You Could Do';
+  color: #FF0000;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+  z-index: #{length($colors) + 1};
+  margin-left: 40px;
+  margin-top: 0%;
+}
+
+#wheel_clear {
+ 
+  clear: both;
+}
