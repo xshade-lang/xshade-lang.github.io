@@ -31,20 +31,39 @@ const Header = styled.h1`
   font-family: ${ Quicksand };
 `;
 
+const EditorToolbar = styled.div`
+  display:block;
+  width:100%;
+  height:1.75em;
+  padding:2px;
+  background: #222;
+`;
+
+const EditorToolbarButton = styled.div`
+  display:block;
+  width:150px;
+  height:100%;
+  font-family: 'nonospace';
+  text-align: center;
+  color: white;
+  border:1px solid white;
+  background: #444;
+`;
+
 const LeftBlock = styled.div`
   float:left;
   display:inline-block;
-  width: 75%;
+  width: 20%;
   height: 600px;
   background:#ddd;
+  padding:10px;
 `;
 
 const RightBlock = styled.div`
   float:right;
   display:inline-block;
-  width:  23%;
+  width:  78%;
   height: 600px;
-  padding:10px;
 `;
 
 const TextAreaBlock = styled.textarea`
@@ -124,7 +143,7 @@ const create = () => class Playground extends Component {
     global.document.body.appendChild(wasm_adapter_script);
     global.document.head.appendChild(playground_css);  
     
-    var btnXSC = document.getElementById("xsc_it");
+    var btnXSC = document.getElementById("xshade_compile");
     btnXSC.onclick = function () {  
         var moduleCode        = inputEditorInstance.getValue();      
         var invokeXSCWithCode = Module.cwrap('xsc_call_w_code', 'string', ['string']);
@@ -149,8 +168,17 @@ const create = () => class Playground extends Component {
           {header}
         </Header>
         <hr/>
-        <LeftBlock id="editor_container">   
-          <SplitEditor
+        <LeftBlock id="editor_container">             
+        <h1>Quick Guide</h1>
+            <span>
+              To be done but will be awesome!
+            </span>
+        </LeftBlock>
+        <RightBlock class="emscripten_border">
+        <EditorToolbar id="editor_toolbar">
+          <EditorToolbarButton id="xshade_compile">Run</EditorToolbarButton>
+        </EditorToolbar>
+        <SplitEditor
             theme="xshade"
             name="UNIQUE_ID_OF_DIV"
             mode="rust"            
@@ -164,13 +192,6 @@ const create = () => class Playground extends Component {
             width="100%"
             height="600px"
           />           
-          <button id="xsc_it">Run</button>
-        </LeftBlock>
-        <RightBlock class="emscripten_border">
-            <h1>Quick Guide</h1>
-            <span>
-              To be done but will be awesome!
-            </span>
         </RightBlock>        
         <ClearBlock class="clear" />        
         <RenderedScene class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" />

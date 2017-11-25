@@ -73083,11 +73083,13 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _templateObject = _taggedTemplateLiteral(['\n  width: 100%;\n  height: 700px;\n  margin: 0px auto;\n  text-align:left;\n  margin-top: 20px;\n'], ['\n  width: 100%;\n  height: 700px;\n  margin: 0px auto;\n  text-align:left;\n  margin-top: 20px;\n']),
     _templateObject2 = _taggedTemplateLiteral(['\n  font-size: 1.4em;\n  font-family: ', ';\n'], ['\n  font-size: 1.4em;\n  font-family: ', ';\n']),
-    _templateObject3 = _taggedTemplateLiteral(['\n  float:left;\n  display:inline-block;\n  width: 75%;\n  height: 600px;\n  background:#ddd;\n'], ['\n  float:left;\n  display:inline-block;\n  width: 75%;\n  height: 600px;\n  background:#ddd;\n']),
-    _templateObject4 = _taggedTemplateLiteral(['\n  float:right;\n  display:inline-block;\n  width:  23%;\n  height: 600px;\n  padding:10px;\n'], ['\n  float:right;\n  display:inline-block;\n  width:  23%;\n  height: 600px;\n  padding:10px;\n']),
-    _templateObject5 = _taggedTemplateLiteral(['\n  overflow-y: scroll;\n  width: 100%;\n  height: 600px;\n  resize: none; /* Remove this if you want the user to resize the textarea */\n'], ['\n  overflow-y: scroll;\n  width: 100%;\n  height: 600px;\n  resize: none; /* Remove this if you want the user to resize the textarea */\n']),
-    _templateObject6 = _taggedTemplateLiteral(['\n  clear:both;\n'], ['\n  clear:both;\n']),
-    _templateObject7 = _taggedTemplateLiteral(['\n  width: 100%;\n'], ['\n  width: 100%;\n']);
+    _templateObject3 = _taggedTemplateLiteral(['\n  display:block;\n  width:100%;\n  height:1.75em;\n  padding:2px;\n  background: #222;\n'], ['\n  display:block;\n  width:100%;\n  height:1.75em;\n  padding:2px;\n  background: #222;\n']),
+    _templateObject4 = _taggedTemplateLiteral(['\n  display:block;\n  width:150px;\n  height:100%;\n  font-family: \'nonospace\';\n  text-align: center;\n  color: white;\n  border:1px solid white;\n  background: #444;\n'], ['\n  display:block;\n  width:150px;\n  height:100%;\n  font-family: \'nonospace\';\n  text-align: center;\n  color: white;\n  border:1px solid white;\n  background: #444;\n']),
+    _templateObject5 = _taggedTemplateLiteral(['\n  float:left;\n  display:inline-block;\n  width: 20%;\n  height: 600px;\n  background:#ddd;\n  padding:10px;\n'], ['\n  float:left;\n  display:inline-block;\n  width: 20%;\n  height: 600px;\n  background:#ddd;\n  padding:10px;\n']),
+    _templateObject6 = _taggedTemplateLiteral(['\n  float:right;\n  display:inline-block;\n  width:  78%;\n  height: 600px;\n'], ['\n  float:right;\n  display:inline-block;\n  width:  78%;\n  height: 600px;\n']),
+    _templateObject7 = _taggedTemplateLiteral(['\n  overflow-y: scroll;\n  width: 100%;\n  height: 600px;\n  resize: none; /* Remove this if you want the user to resize the textarea */\n'], ['\n  overflow-y: scroll;\n  width: 100%;\n  height: 600px;\n  resize: none; /* Remove this if you want the user to resize the textarea */\n']),
+    _templateObject8 = _taggedTemplateLiteral(['\n  clear:both;\n'], ['\n  clear:both;\n']),
+    _templateObject9 = _taggedTemplateLiteral(['\n  width: 100%;\n'], ['\n  width: 100%;\n']);
 
 var _react = require('react');
 
@@ -73139,15 +73141,19 @@ var Container = _styledComponents2.default.div(_templateObject);
 
 var Header = _styledComponents2.default.h1(_templateObject2, _font.Quicksand);
 
-var LeftBlock = _styledComponents2.default.div(_templateObject3);
+var EditorToolbar = _styledComponents2.default.div(_templateObject3);
 
-var RightBlock = _styledComponents2.default.div(_templateObject4);
+var EditorToolbarButton = _styledComponents2.default.div(_templateObject4);
 
-var TextAreaBlock = _styledComponents2.default.textarea(_templateObject5);
+var LeftBlock = _styledComponents2.default.div(_templateObject5);
 
-var ClearBlock = _styledComponents2.default.div(_templateObject6);
+var RightBlock = _styledComponents2.default.div(_templateObject6);
 
-var RenderedScene = _styledComponents2.default.canvas(_templateObject7);
+var TextAreaBlock = _styledComponents2.default.textarea(_templateObject7);
+
+var ClearBlock = _styledComponents2.default.div(_templateObject8);
+
+var RenderedScene = _styledComponents2.default.canvas(_templateObject9);
 
 var XShadeMode = function (_ace$acequire$Mode) {
   _inherits(XShadeMode, _ace$acequire$Mode);
@@ -73221,7 +73227,7 @@ var create = function create() {
         global.document.body.appendChild(wasm_adapter_script);
         global.document.head.appendChild(playground_css);
 
-        var btnXSC = document.getElementById("xsc_it");
+        var btnXSC = document.getElementById("xshade_compile");
         btnXSC.onclick = function () {
           var moduleCode = inputEditorInstance.getValue();
           var invokeXSCWithCode = Module.cwrap('xsc_call_w_code', 'string', ['string']);
@@ -73253,6 +73259,29 @@ var create = function create() {
           _react2.default.createElement(
             LeftBlock,
             { id: 'editor_container' },
+            _react2.default.createElement(
+              'h1',
+              null,
+              'Quick Guide'
+            ),
+            _react2.default.createElement(
+              'span',
+              null,
+              'To be done but will be awesome!'
+            )
+          ),
+          _react2.default.createElement(
+            RightBlock,
+            { 'class': 'emscripten_border' },
+            _react2.default.createElement(
+              EditorToolbar,
+              { id: 'editor_toolbar' },
+              _react2.default.createElement(
+                EditorToolbarButton,
+                { id: 'xshade_compile' },
+                'Run'
+              )
+            ),
             _react2.default.createElement(_reactAce.split, {
               theme: 'xshade',
               name: 'UNIQUE_ID_OF_DIV',
@@ -73264,26 +73293,7 @@ var create = function create() {
               editorProps: { $blockScrolling: true },
               width: '100%',
               height: '600px'
-            }),
-            _react2.default.createElement(
-              'button',
-              { id: 'xsc_it' },
-              'Run'
-            )
-          ),
-          _react2.default.createElement(
-            RightBlock,
-            { 'class': 'emscripten_border' },
-            _react2.default.createElement(
-              'h1',
-              null,
-              'Quick Guide'
-            ),
-            _react2.default.createElement(
-              'span',
-              null,
-              'To be done but will be awesome!'
-            )
+            })
           ),
           _react2.default.createElement(ClearBlock, { 'class': 'clear' }),
           _react2.default.createElement(RenderedScene, { 'class': 'emscripten', id: 'canvas', oncontextmenu: 'event.preventDefault()' })
