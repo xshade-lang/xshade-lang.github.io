@@ -1,4 +1,4 @@
-#wheel, #wheel_umbrella, #wheel_color, #wheel_label {
+.wheel, .wheel_umbrella, .wheel_color, .wheel_label {
   content: "";
   position: absolute;
   border-radius: 50%;
@@ -7,7 +7,7 @@
   width: 80px;
   height: 80px; }
 
-#wheel {
+.wheel {
   width: 80px;
   height: 80px;
   position: absolute;
@@ -15,7 +15,7 @@
   top: 0px;
   margin: 5px; }
 
-#wheel_umbrella {
+.wheel_umbrella {
   position: relative;
   -webkit-margin-before: 0em;
   -webkit-margin-after: 0em;
@@ -23,10 +23,10 @@
   -webkit-margin-end: 0px;
   -webkit-padding-start: 0px; }
 
-#wheel_color, #wheel_color:nth-child(n+7):after {
+.wheel_color, .wheel_color:nth-child(n+7):after {
   clip: rect(0, 80px, 80px, 40px); }
 
-#wheel_color:after, #wheel_color:nth-child(n+7) {
+.wheel_color:after, .wheel_color:nth-child(n+7) {
   content: "";
   position: absolute;
   border-radius: 50%;
@@ -36,66 +36,66 @@
   height: 80px;
   clip: rect(0, 40px, 80px, 0); }
 
-#wheel_color:nth-child(1):after {
+.wheel_color:nth-child(1):after {
   background-color: #9C5E87;
   transform: rotate(30deg);
   z-index: 12; }
 
-#wheel_color:nth-child(2):after {
+.wheel_color:nth-child(2):after {
   background-color: #9A5BA2;
   transform: rotate(60deg);
   z-index: 11; }
 
-#wheel_color:nth-child(3):after {
+.wheel_color:nth-child(3):after {
   background-color: #7B59A8;
   transform: rotate(90deg);
   z-index: 10; }
 
-#wheel_color:nth-child(4):after {
+.wheel_color:nth-child(4):after {
   background-color: #5658AE;
   transform: rotate(120deg);
   z-index: 9; }
 
-#wheel_color:nth-child(5):after {
+.wheel_color:nth-child(5):after {
   background-color: #5181B4;
   transform: rotate(150deg);
   z-index: 8; }
 
-#wheel_color:nth-child(6):after {
+.wheel_color:nth-child(6):after {
   background-color: #4EB3BA;
   transform: rotate(180deg);
   z-index: 7; }
 
-#wheel_color:nth-child(7):after {
+.wheel_color:nth-child(7):after {
   background-color: #4AC3BA;
   transform: rotate(180deg); }
 
-#wheel_color:nth-child(8):after {
+.wheel_color:nth-child(8):after {
   background-color: #45C75A;
   transform: rotate(210deg); }
 
-#wheel_color:nth-child(9):after {
+.wheel_color:nth-child(9):after {
   background-color: #69CD40;
   transform: rotate(240deg); }
 
-#wheel_color:nth-child(10):after {
+.wheel_color:nth-child(10):after {
   background-color: #ACD33A;
   transform: rotate(270deg); }
 
-#wheel_color:nth-child(11):after {
+.wheel_color:nth-child(11):after {
   background-color: #D9B934;
   transform: rotate(300deg); }
 
-#wheel_color:nth-child(12):after {
+.wheel_color:nth-child(12):after {
   background-color: #E06C2E;
   transform: rotate(330deg); }
 
-#wheel_container {
+.wheel_container {
   width: 100px;
   float: left;
   display: inline-block; }
 
-#wheel_label {
+.wheel_label {
   font-size: 5em;
   font-family: 'Nothing You Could Do';
   color: #FF0000;
@@ -104,7 +104,52 @@
   margin-left: 40px;
   margin-top: 0%; }
 
-#wheel_clear {
+.wheel_clear {
   clear: both; }
+
+.left_block {
+  float: left;
+  display: block;
+  width: 20%;
+  height: 600px;
+  background: #ddd;
+  padding: 10px; }
+
+.right_block {
+  float: right;
+  display: block;
+  width: 78%;
+  height: 600px; }
+
+.editor_toolbar {
+  display: block;
+  width: 100%;
+  background: white;
+  border: 1px solid gray;
+  text-align: center;
+  margin-bottom: 10px;
+  position: relative; }
+
+.editor_toolbar_button, .editor_toolbar_button:hover {
+  display: block;
+  width: 150px;
+  height: 1.25em;
+  font-size: 1.25em;
+  font-family: monospace;
+  text-align: center;
+  color: #A00000;
+  border: none;
+  background: #ddd;
+  margin: 5px; }
+
+.editor_toolbar_button:hover {
+  color: #FF0000;
+  background: #eee; }
+
+.input_editor {
+  width: 50%; }
+
+.result_editor {
+  width: 50%; }
 
 /*# sourceMappingURL=playground.generated.css.map */

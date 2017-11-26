@@ -15,10 +15,10 @@ const ContentContainer = styled.div`
     margin-right: 0.5em;
   }
   @media ${ Tablet } {
-    width: 40em;
+    width: 100%;
   }
   @media ${ Laptop } {
-    width: 55em;
+    width: 100%;
   }
   @media ${ Desktop } {
     width: 100%;

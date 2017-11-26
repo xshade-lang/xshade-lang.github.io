@@ -11,10 +11,10 @@
 }
 
 $wheel: 80px;
-#wheel, #wheel_umbrella, #wheel_color, #wheel_label {
+.wheel, .wheel_umbrella, .wheel_color, .wheel_label {
   @include circle($wheel);
 }
-#wheel {
+.wheel {
   // overflow: hidden;
   width: $wheel;
   height: $wheel;
@@ -23,7 +23,7 @@ $wheel: 80px;
   top: 0px;
   margin:5px;
 }
-#wheel_umbrella {
+.wheel_umbrella {
   position: relative;
   //-webkit-filter: blur(1.7em);
   // -webkit-transform: scale(1.35);
@@ -33,10 +33,10 @@ $wheel: 80px;
   -webkit-margin-end: 0px;
   -webkit-padding-start: 0px;
 }
-#wheel_color, #wheel_color:nth-child(n+7):after {
+.wheel_color, .wheel_color:nth-child(n+7):after {
   clip: rect(0, $wheel, $wheel, #{$wheel/2});
 }
-#wheel_color:after, #wheel_color:nth-child(n+7) {
+.wheel_color:after, .wheel_color:nth-child(n+7) {
   @include circle($wheel);
   clip: rect(0, #{$wheel/2}, $wheel, 0);
 }
@@ -84,7 +84,7 @@ $wheel: 80px;
     #E06C2E);
 
 @for $i from 0 to length($colors) {
-  #wheel_color:nth-child(#{1+$i}):after {
+  .wheel_color:nth-child(#{1+$i}):after {
     background-color: nth($colors, $i+1);
     @if $i < 6 {
       transform: rotate(#{30*(1+$i)}deg);
@@ -95,16 +95,16 @@ $wheel: 80px;
   }
 }
 
-#wheel_container {
+.wheel_container {
   width: 100px;
   float:left;
   display:inline-block;
 }
 
-#wheel_container_proportions { 
+.wheel_container_proportions { 
 }
 
-#wheel_label {
+.wheel_label {
   font-size: 5em;
   font-family: 'Nothing You Could Do';
   color: #FF0000;
@@ -114,7 +114,61 @@ $wheel: 80px;
   margin-top: 0%;
 }
 
-#wheel_clear {
+.wheel_clear {
  
   clear: both;
+}
+
+.left_block {
+  float:left;
+  display:block;
+  width: 20%;
+  height: 600px;
+  background:#ddd;
+  padding:10px;
+}
+
+.right_block {
+  float:right;
+  display:block;
+  width:  78%;
+  height: 600px;
+}
+
+.editor_toolbar {   
+  display:block;
+  width:100%;
+  background: white;
+  border: 1px solid gray;
+  text-align: center;
+  margin-bottom:10px;
+  position:relative;
+}
+
+.editor_toolbar_button { 
+  display:block;
+  width:150px;
+  height:1.25em;
+  font-size: 1.25em;
+  font-family: monospace;
+  text-align: center;
+  color: #A00000;
+  border:none;
+  background: #ddd;
+  margin:5px;
+}
+
+.editor_toolbar_button:hover { 
+  @extend .editor_toolbar_button;
+
+  color: #FF0000;
+  background: #eee;
+}
+
+.input_editor { 
+  width:50%;
+}
+
+.result_editor { 
+  width:50%;
 }

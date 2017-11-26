@@ -9,6 +9,7 @@ import { Quicksand } from '../../style/font';
 
 import 'brace/mode/rust'
 import 'brace/theme/monokai';
+import 'brace/theme/tomorrow';
 
 import '../../../editor/mode/xshade';
 import '../../../editor/theme/xshade';
@@ -29,41 +30,6 @@ const Container = styled.div`
 const Header = styled.h1`
   font-size: 1.4em;
   font-family: ${ Quicksand };
-`;
-
-const EditorToolbar = styled.div`
-  display:block;
-  width:100%;
-  height:1.75em;
-  padding:2px;
-  background: #222;
-`;
-
-const EditorToolbarButton = styled.div`
-  display:block;
-  width:150px;
-  height:100%;
-  font-family: 'nonospace';
-  text-align: center;
-  color: white;
-  border:1px solid white;
-  background: #444;
-`;
-
-const LeftBlock = styled.div`
-  float:left;
-  display:inline-block;
-  width: 20%;
-  height: 600px;
-  background:#ddd;
-  padding:10px;
-`;
-
-const RightBlock = styled.div`
-  float:right;
-  display:inline-block;
-  width:  78%;
-  height: 600px;
 `;
 
 const TextAreaBlock = styled.textarea`
@@ -94,10 +60,21 @@ var resultEditorInstance  = null;
 var currentEditorContents = "";
 
 function onEditorLoad(editor) {
+  const customMode = new XShadeMode();
+
   inputEditorInstance  = editor.getEditor(0);
   resultEditorInstance = editor.getEditor(1);
 
+  inputEditorInstance.className  += "input_editor";
+  resultEditorInstance.className += "result_editor";
+
   inputEditorInstance.setValue(program, 1 /* Move cursor to end */);
+  inputEditorInstance.getSession().setMode(customMode);
+
+  inputEditorInstance.focus();
+  // inputEditorInstance.setHighlightSelectedWord(true);
+  inputEditorInstance.setHighlightActiveLine(true);
+
   resultEditorInstance.setValue(
 `/*
   RESULT WINDOW:
@@ -105,13 +82,7 @@ function onEditorLoad(editor) {
    Compilation results will then be displayed here.
 */`
     , 1);
-
-  const customMode = new XShadeMode();
-  inputEditorInstance.getSession().setMode(customMode);
-
   resultEditorInstance.setReadOnly(true);
-
-  inputEditorInstance.focus();
 }
 
 function onEditorChange({ newValue }) {
@@ -167,19 +138,18 @@ const create = () => class Playground extends Component {
         <Header>
           {header}
         </Header>
-        <hr/>
-        <LeftBlock id="editor_container">             
+        <div id="editor_container" className="left_block">             
         <h1>Quick Guide</h1>
             <span>
               To be done but will be awesome!
             </span>
-        </LeftBlock>
-        <RightBlock class="emscripten_border">
-        <EditorToolbar id="editor_toolbar">
-          <EditorToolbarButton id="xshade_compile">Run</EditorToolbarButton>
-        </EditorToolbar>
-        <SplitEditor
-            theme="xshade"
+        </div>
+        <div className="right_block">
+          <div id="editor_toolbar" className="editor_toolbar">
+            <input type="button" id="xshade_compile" className="editor_toolbar_button" value="Run" />
+          </div>
+          <SplitEditor
+            theme="tomorrow"
             name="UNIQUE_ID_OF_DIV"
             mode="rust"            
             splits={2}
@@ -192,7 +162,7 @@ const create = () => class Playground extends Component {
             width="100%"
             height="600px"
           />           
-        </RightBlock>        
+        </div>        
         <ClearBlock class="clear" />        
         <RenderedScene class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" />
       </Container>

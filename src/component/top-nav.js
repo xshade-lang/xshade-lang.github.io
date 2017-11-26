@@ -28,26 +28,26 @@ const create = () => class TopNav extends Component {
       <Container>
         <div id="wheel_container">
           <div id="wheel_container_proportions">
-            <div id="wheel" class="wheel">
-              <ul id="wheel_umbrella"  class="wheel_umbrella">
-                <li id="wheel_color"   class="wheel_color"></li>
-                <li id="wheel_color"   class="wheel_color"></li>
-                <li id="wheel_color"   class="wheel_color"></li>
-                <li id="wheel_color"   class="wheel_color"></li>
-                <li id="wheel_color"   class="wheel_color"></li>
-                <li id="wheel_color"   class="wheel_color"></li>
-                <li id="wheel_color"   class="wheel_color"></li>
-                <li id="wheel_color"   class="wheel_color"></li>
-                <li id="wheel_color"   class="wheel_color"></li>
-                <li id="wheel_color"   class="wheel_color"></li>
-                <li id="wheel_color"   class="wheel_color"></li>
-                <li id="wheel_color"   class="wheel_color"></li>
+            <div id="wheel" className="wheel">
+              <ul id="wheel_umbrella"  className="wheel_umbrella">
+                <li id="wheel_color_0"  className="wheel_color"></li>
+                <li id="wheel_color_1"  className="wheel_color"></li>
+                <li id="wheel_color_2"  className="wheel_color"></li>
+                <li id="wheel_color_3"  className="wheel_color"></li>
+                <li id="wheel_color_4"  className="wheel_color"></li>
+                <li id="wheel_color_5"  className="wheel_color"></li>
+                <li id="wheel_color_6"  className="wheel_color"></li>
+                <li id="wheel_color_7"  className="wheel_color"></li>
+                <li id="wheel_color_8"  className="wheel_color"></li>
+                <li id="wheel_color_9"  className="wheel_color"></li>
+                <li id="wheel_color_10" className="wheel_color"></li>
+                <li id="wheel_color_11" className="wheel_color"></li>
               </ul>
-              <span id="wheel_label">X</span>
+              <span id="wheel_label" className="wheel_label">X</span>
             </div>
           </div>          
         </div>        
-        <div id="wheel_clear" class="wheel"/>
+        <div id="wheel_clear" className="wheel_clear"/>
         <Brand>Shade-Playground</Brand>
       </Container>
     );
