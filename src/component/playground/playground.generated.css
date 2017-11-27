@@ -107,18 +107,21 @@
 .wheel_clear {
   clear: both; }
 
+.playground_container {
+  margin: 0 auto; }
+
 .left_block {
-  float: left;
-  display: block;
+  display: inline-block;
   width: 20%;
   height: 600px;
   background: #ddd;
+  vertical-align: top;
   padding: 10px; }
 
 .right_block {
-  float: right;
-  display: block;
+  display: inline-block;
   width: 76%;
+  vertical-align: top;
   height: 600px; }
 
 .editor_toolbar {
@@ -145,11 +148,5 @@
 .editor_toolbar_button:hover {
   color: #FF0000;
   background: #eee; }
-
-.input_editor {
-  width: 50%; }
-
-.result_editor {
-  width: 50%; }
 
 /*# sourceMappingURL=playground.generated.css.map */

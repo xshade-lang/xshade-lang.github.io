@@ -73110,7 +73110,7 @@ Object.defineProperty(exports, "__esModule", {
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _templateObject = _taggedTemplateLiteral(['\n  \n'], ['\n  \n']),
-    _templateObject2 = _taggedTemplateLiteral(['\n  margin: 0;\n  padding: 0;\n  \n  @media ', ' {\n    margin-left: 0.5em;\n    margin-right: 0.5em;\n  }\n  @media ', ' {\n    width: 100%;\n  }\n  @media ', ' {\n    width: 100%;\n  }\n  @media ', ' {\n    width: 100%;\n  }\n'], ['\n  margin: 0;\n  padding: 0;\n  \n  @media ', ' {\n    margin-left: 0.5em;\n    margin-right: 0.5em;\n  }\n  @media ', ' {\n    width: 100%;\n  }\n  @media ', ' {\n    width: 100%;\n  }\n  @media ', ' {\n    width: 100%;\n  }\n']);
+    _templateObject2 = _taggedTemplateLiteral(['\n  margin: 0 auto;\n  padding: 0;\n  \n  @media ', ' {\n    margin-left: 0.5em;\n    margin-right: 0.5em;\n  }\n  @media ', ' {\n    width: 95%;\n  }\n  @media ', ' {\n    width: 95%;\n  }\n  @media ', ' {\n    width: 95%;\n  }\n'], ['\n  margin: 0 auto;\n  padding: 0;\n  \n  @media ', ' {\n    margin-left: 0.5em;\n    margin-right: 0.5em;\n  }\n  @media ', ' {\n    width: 95%;\n  }\n  @media ', ' {\n    width: 95%;\n  }\n  @media ', ' {\n    width: 95%;\n  }\n']);
 
 var _react = require('react');
 
@@ -73191,11 +73191,10 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _templateObject = _taggedTemplateLiteral(['\n  width: 100%;\n  height: 700px;\n  margin: 0px auto;\n  text-align:left;\n  margin-top: 20px;\n'], ['\n  width: 100%;\n  height: 700px;\n  margin: 0px auto;\n  text-align:left;\n  margin-top: 20px;\n']),
+var _templateObject = _taggedTemplateLiteral(['\n  width: 100%;\n  height: 700px;\n  margin-top: 20px;\n'], ['\n  width: 100%;\n  height: 700px;\n  margin-top: 20px;\n']),
     _templateObject2 = _taggedTemplateLiteral(['\n  font-size: 1.4em;\n  font-family: ', ';\n'], ['\n  font-size: 1.4em;\n  font-family: ', ';\n']),
-    _templateObject3 = _taggedTemplateLiteral(['\n  overflow-y: scroll;\n  width: 100%;\n  height: 600px;\n  resize: none; /* Remove this if you want the user to resize the textarea */\n'], ['\n  overflow-y: scroll;\n  width: 100%;\n  height: 600px;\n  resize: none; /* Remove this if you want the user to resize the textarea */\n']),
-    _templateObject4 = _taggedTemplateLiteral(['\n  clear:both;\n'], ['\n  clear:both;\n']),
-    _templateObject5 = _taggedTemplateLiteral(['\n  width: 100%;\n'], ['\n  width: 100%;\n']);
+    _templateObject3 = _taggedTemplateLiteral(['\n  clear:both;\n'], ['\n  clear:both;\n']),
+    _templateObject4 = _taggedTemplateLiteral(['\n  width: 100%;\n'], ['\n  width: 100%;\n']);
 
 var _react = require('react');
 
@@ -73246,14 +73245,11 @@ ace.acequire(['ace/split'], function (s) {
 });
 
 var Container = _styledComponents2.default.div(_templateObject);
-
 var Header = _styledComponents2.default.h1(_templateObject2, _font.Quicksand);
 
-var TextAreaBlock = _styledComponents2.default.textarea(_templateObject3);
+var ClearBlock = _styledComponents2.default.div(_templateObject3);
 
-var ClearBlock = _styledComponents2.default.div(_templateObject4);
-
-var RenderedScene = _styledComponents2.default.canvas(_templateObject5);
+var RenderedScene = _styledComponents2.default.canvas(_templateObject4);
 
 var XShadeMode = function (_ace$acequire$Mode) {
   _inherits(XShadeMode, _ace$acequire$Mode);
@@ -73268,6 +73264,7 @@ var XShadeMode = function (_ace$acequire$Mode) {
   return XShadeMode;
 }(ace.acequire('ace/mode/rust').Mode);
 
+var splitEditorInstance = null;
 var inputEditorInstance = null;
 var resultEditorInstance = null;
 
@@ -73275,6 +73272,8 @@ var currentEditorContents = "";
 
 function onEditorLoad(editor) {
   var customMode = new XShadeMode();
+
+  splitEditorInstance = editor;
 
   inputEditorInstance = editor.getEditor(0);
   resultEditorInstance = editor.getEditor(1);
@@ -73299,6 +73298,9 @@ function onEditorChange(_ref) {
   var newValue = _ref.newValue;
 }
 
+var editorContainer = null;
+var editorComponent = null;
+
 var create = function create() {
   return function (_Component) {
     _inherits(Playground, _Component);
@@ -73315,8 +73317,20 @@ var create = function create() {
     }
 
     _createClass(Playground, [{
+      key: 'updateDimensions',
+      value: function updateDimensions() {
+        // Kanonen auf Spatzen... Yep, I'm annoyed...
+        splitEditorInstance.resize();
+        inputEditorInstance.resize();
+        resultEditorInstance.resize();
+      }
+    }, {
       key: 'componentDidMount',
       value: function componentDidMount(nextProps, nextState) {
+        editorContainer = document.getElementById("editor_container");
+
+        window.addEventListener("resize", this.updateDimensions.bind(this));
+
         var playground_script = document.createElement("script");
         playground_script.src = "./src/component/playground/playground-v1-wasm.js";
         var wasm_adapter_script = document.createElement("script");
@@ -73344,6 +73358,20 @@ var create = function create() {
           // var beautify = ace.acequire("ace/ext/beautify"); // get reference to extension
           // beautify.beautify(editorInstance.session);
         };
+
+        // Manullay trigger resize event to have the editors be resized appropriately.
+        this.updateDimensions();
+        window.dispatchEvent(new Event("resize"));
+      }
+    }, {
+      key: 'componentDidUpdate',
+      value: function componentDidUpdate() {
+        this.updateDimensions();
+      }
+    }, {
+      key: 'componentWillUnmount',
+      value: function componentWillUnmount() {
+        window.removeEventListener("resize", this.updateDimensions.bind(this));
       }
     }, {
       key: 'render',
@@ -73354,7 +73382,7 @@ var create = function create() {
 
         return _react2.default.createElement(
           Container,
-          { 'class': 'container' },
+          { className: 'playground_container' },
           _react2.default.createElement(
             Header,
             null,
@@ -73362,7 +73390,7 @@ var create = function create() {
           ),
           _react2.default.createElement(
             'div',
-            { id: 'editor_container', className: 'left_block' },
+            { className: 'left_block' },
             _react2.default.createElement(
               'h1',
               null,
@@ -73376,7 +73404,7 @@ var create = function create() {
           ),
           _react2.default.createElement(
             'div',
-            { className: 'right_block' },
+            { id: 'editor_container', className: 'right_block' },
             _react2.default.createElement(
               'div',
               { id: 'editor_toolbar', className: 'editor_toolbar' },
@@ -73384,6 +73412,7 @@ var create = function create() {
             ),
             _react2.default.createElement(_reactAce.split, {
               theme: 'tomorrow',
+              className: 'editor_instance',
               name: 'UNIQUE_ID_OF_DIV',
               mode: 'rust',
               splits: 2,
@@ -73392,10 +73421,12 @@ var create = function create() {
               onChange: onEditorChange,
               editorProps: { $blockScrolling: true },
               width: '100%',
-              height: '600px'
+              height: '600px',
+              ref: function ref(split) {
+                editorComponent = split;
+              }
             })
           ),
-          _react2.default.createElement(ClearBlock, { 'class': 'clear' }),
           _react2.default.createElement(RenderedScene, { 'class': 'emscripten', id: 'canvas', oncontextmenu: 'event.preventDefault()' })
         );
       }

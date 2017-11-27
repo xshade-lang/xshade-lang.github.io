@@ -119,19 +119,23 @@ $wheel: 80px;
   clear: both;
 }
 
+.playground_container {
+  margin:0 auto;
+}
+
 .left_block {
-  float:left;
-  display:block;
+  display:inline-block;
   width: 20%;
   height: 600px;
   background:#ddd;
+  vertical-align: top;
   padding:10px;
 }
 
 .right_block {
-  float:right;
-  display:block;
+  display:inline-block;
   width:  76%;
+  vertical-align: top;
   height: 600px;
 }
 
@@ -165,10 +169,5 @@ $wheel: 80px;
   background: #eee;
 }
 
-.input_editor { 
-  width:50%;
-}
-
-.result_editor { 
-  width:50%;
+.editor_toolbar, .editor_instance {
 }

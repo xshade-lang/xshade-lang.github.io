@@ -22,21 +22,11 @@ ace.acequire(['ace/split'], function(s) { brace.Split = s.Split; })
 const Container = styled.div`
   width: 100%;
   height: 700px;
-  margin: 0px auto;
-  text-align:left;
   margin-top: 20px;
 `
-
 const Header = styled.h1`
   font-size: 1.4em;
   font-family: ${ Quicksand };
-`;
-
-const TextAreaBlock = styled.textarea`
-  overflow-y: scroll;
-  width: 100%;
-  height: 600px;
-  resize: none; /* Remove this if you want the user to resize the textarea */
 `;
 
 const ClearBlock = styled.div`
@@ -54,6 +44,7 @@ class XShadeMode extends ace.acequire('ace/mode/rust').Mode {
 	}
 }
 
+var splitEditorInstance   = null;
 var inputEditorInstance   = null;
 var resultEditorInstance  = null;
 
@@ -61,6 +52,8 @@ var currentEditorContents = "";
 
 function onEditorLoad(editor) {
   const customMode = new XShadeMode();
+
+  splitEditorInstance = editor;
 
   inputEditorInstance  = editor.getEditor(0);
   resultEditorInstance = editor.getEditor(1);
@@ -83,11 +76,15 @@ function onEditorLoad(editor) {
 */`
     , 1);
   resultEditorInstance.setReadOnly(true);
+  
 }
 
 function onEditorChange({ newValue }) {
   // currentEditorContents = newValue;
 }
+
+var editorContainer = null;
+var editorComponent = null;
 
 const create = () => class Playground extends Component {
   constructor(props) {
@@ -98,7 +95,18 @@ const create = () => class Playground extends Component {
     };
   }
 
+  updateDimensions() {
+    // Kanonen auf Spatzen... Yep, I'm annoyed...
+    splitEditorInstance.resize();
+    inputEditorInstance.resize();
+    resultEditorInstance.resize();
+  }
+
   componentDidMount(nextProps, nextState) {
+    editorContainer = document.getElementById("editor_container");
+    
+    window.addEventListener("resize", this.updateDimensions.bind(this));
+
     var playground_script   = document.createElement("script"); 
     playground_script.src   = "./src/component/playground/playground-v1-wasm.js"; 
     var wasm_adapter_script = document.createElement("script"); 
@@ -126,6 +134,18 @@ const create = () => class Playground extends Component {
         // var beautify = ace.acequire("ace/ext/beautify"); // get reference to extension
         // beautify.beautify(editorInstance.session);
     };
+
+    // Manullay trigger resize event to have the editors be resized appropriately.
+    this.updateDimensions();
+    window.dispatchEvent(new Event("resize"));
+  }
+
+  componentDidUpdate() {
+    this.updateDimensions();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.updateDimensions.bind(this));
   }
 
   render() {
@@ -134,36 +154,37 @@ const create = () => class Playground extends Component {
     const content = this.props.content;
 
     return (
-      <Container class="container">        
+      <Container className="playground_container">        
         <Header>
           {header}
         </Header>
-        <div id="editor_container" className="left_block">             
-        <h1>Quick Guide</h1>
-            <span>
-              To be done but will be awesome!
-            </span>
+        <div className="left_block">             
+          <h1>Quick Guide</h1>
+          <span>
+            To be done but will be awesome!
+          </span>
         </div>
-        <div className="right_block">
-          <div id="editor_toolbar" className="editor_toolbar">
-            <input type="button" id="xshade_compile" className="editor_toolbar_button" value="Run" />
-          </div>
-          <SplitEditor
-            theme="tomorrow"
-            name="UNIQUE_ID_OF_DIV"
-            mode="rust"            
-            splits={2}
-            orientation="beside"
-            onLoad={onEditorLoad}
-            onChange={onEditorChange}
-            editorProps={
-              {$blockScrolling: true}
-            }
-            width="100%"
-            height="600px"
-          />           
+        <div  id="editor_container" className="right_block">
+            <div id="editor_toolbar" className="editor_toolbar">
+              <input type="button" id="xshade_compile" className="editor_toolbar_button" value="Run" />
+            </div>
+            <SplitEditor
+              theme="tomorrow"
+              className="editor_instance"
+              name="UNIQUE_ID_OF_DIV"
+              mode="rust"            
+              splits={2}
+              orientation="beside"
+              onLoad={onEditorLoad}
+              onChange={onEditorChange}
+              editorProps={
+                {$blockScrolling: true}
+              }
+              width="100%"
+              height="600px"
+              ref={(split) => { editorComponent = split; }}
+            />           
         </div>        
-        <ClearBlock class="clear" />        
         <RenderedScene class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" />
       </Container>
     );

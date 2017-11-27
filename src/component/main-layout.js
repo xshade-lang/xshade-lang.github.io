@@ -7,7 +7,7 @@ const AppContainer = styled.div`
 `;
 
 const ContentContainer = styled.div`
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
   
   @media ${ Phone } {
@@ -15,13 +15,13 @@ const ContentContainer = styled.div`
     margin-right: 0.5em;
   }
   @media ${ Tablet } {
-    width: 100%;
+    width: 95%;
   }
   @media ${ Laptop } {
-    width: 100%;
+    width: 95%;
   }
   @media ${ Desktop } {
-    width: 100%;
+    width: 95%;
   }
 `;
 
