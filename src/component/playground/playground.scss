@@ -125,7 +125,7 @@ $wheel: 80px;
 
 .left_block {
   display:inline-block;
-  width: 20%;
+  width: 0%;
   height: 600px;
   background:#ddd;
   vertical-align: top;
@@ -134,7 +134,7 @@ $wheel: 80px;
 
 .right_block {
   display:inline-block;
-  width:  76%;
+  width:  100%;
   vertical-align: top;
   height: 600px;
 }
@@ -169,5 +169,7 @@ $wheel: 80px;
   background: #eee;
 }
 
-.editor_toolbar, .editor_instance {
+.input_editor_instance, .result_editor_instance {
+  display:inline-block;
+  width:50%;
 }

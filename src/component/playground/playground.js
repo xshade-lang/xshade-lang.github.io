@@ -50,16 +50,11 @@ var resultEditorInstance  = null;
 
 var currentEditorContents = "";
 
-function onEditorLoad(editor) {
+function onInputEditorLoad(editor) {
   const customMode = new XShadeMode();
 
-  splitEditorInstance = editor;
-
-  inputEditorInstance  = editor.getEditor(0);
-  resultEditorInstance = editor.getEditor(1);
-
+  inputEditorInstance = editor;
   inputEditorInstance.className  += "input_editor";
-  resultEditorInstance.className += "result_editor";
 
   inputEditorInstance.setValue(program, 1 /* Move cursor to end */);
   inputEditorInstance.getSession().setMode(customMode);
@@ -67,6 +62,14 @@ function onEditorLoad(editor) {
   inputEditorInstance.focus();
   // inputEditorInstance.setHighlightSelectedWord(true);
   inputEditorInstance.setHighlightActiveLine(true);
+
+}
+
+function onResultEditorLoad(editor) {
+  const customMode = new XShadeMode();
+
+  resultEditorInstance = editor;
+  resultEditorInstance.className += "result_editor";
 
   resultEditorInstance.setValue(
 `/*
@@ -78,6 +81,7 @@ function onEditorLoad(editor) {
   resultEditorInstance.setReadOnly(true);
   
 }
+
 
 function onEditorChange({ newValue }) {
   // currentEditorContents = newValue;
@@ -153,37 +157,49 @@ const create = () => class Playground extends Component {
     const header  = this.props.header;
     const content = this.props.content;
 
+  // <div className="left_block">             
+  //   <h1>Quick Guide</h1>
+  //   <span>
+  //     To be done but will be awesome!
+  //   </span>
+  // </div>
     return (
       <Container className="playground_container">        
         <Header>
           {header}
-        </Header>
-        <div className="left_block">             
-          <h1>Quick Guide</h1>
-          <span>
-            To be done but will be awesome!
-          </span>
-        </div>
+        </Header>        
         <div  id="editor_container" className="right_block">
             <div id="editor_toolbar" className="editor_toolbar">
               <input type="button" id="xshade_compile" className="editor_toolbar_button" value="Run" />
             </div>
-            <SplitEditor
+            <AceEditor
               theme="tomorrow"
-              className="editor_instance"
-              name="UNIQUE_ID_OF_DIV"
+              className="input_editor_instance"
+              name="input_editor_instance"
               mode="rust"            
-              splits={2}
-              orientation="beside"
-              onLoad={onEditorLoad}
+              onLoad={onInputEditorLoad}
               onChange={onEditorChange}
               editorProps={
                 {$blockScrolling: true}
               }
-              width="auto"
+              width="49%"
               height="600px"
-              ref={(split) => { editorComponent = split; }}
-            />           
+              ref="inputEditor"
+            />  
+            <AceEditor
+              theme="tomorrow"
+              className="result_editor_instance"
+              name="result_editor_instance"
+              mode="rust"            
+              onLoad={onResultEditorLoad}
+              onChange={onEditorChange}
+              editorProps={
+                {$blockScrolling: true}
+              }
+              width="49%"
+              height="600px"
+              ref="resultEditor"
+            />             
         </div>        
         <RenderedScene class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" />
       </Container>

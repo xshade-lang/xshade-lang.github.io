@@ -112,7 +112,7 @@
 
 .left_block {
   display: inline-block;
-  width: 20%;
+  width: 0%;
   height: 600px;
   background: #ddd;
   vertical-align: top;
@@ -120,7 +120,7 @@
 
 .right_block {
   display: inline-block;
-  width: 76%;
+  width: 100%;
   vertical-align: top;
   height: 600px; }
 
@@ -148,5 +148,9 @@
 .editor_toolbar_button:hover {
   color: #FF0000;
   background: #eee; }
+
+.input_editor_instance, .result_editor_instance {
+  display: inline-block;
+  width: 50%; }
 
 /*# sourceMappingURL=playground.generated.css.map */

@@ -73270,16 +73270,11 @@ var resultEditorInstance = null;
 
 var currentEditorContents = "";
 
-function onEditorLoad(editor) {
+function onInputEditorLoad(editor) {
   var customMode = new XShadeMode();
 
-  splitEditorInstance = editor;
-
-  inputEditorInstance = editor.getEditor(0);
-  resultEditorInstance = editor.getEditor(1);
-
+  inputEditorInstance = editor;
   inputEditorInstance.className += "input_editor";
-  resultEditorInstance.className += "result_editor";
 
   inputEditorInstance.setValue(_example_program.program, 1 /* Move cursor to end */);
   inputEditorInstance.getSession().setMode(customMode);
@@ -73287,6 +73282,13 @@ function onEditorLoad(editor) {
   inputEditorInstance.focus();
   // inputEditorInstance.setHighlightSelectedWord(true);
   inputEditorInstance.setHighlightActiveLine(true);
+}
+
+function onResultEditorLoad(editor) {
+  var customMode = new XShadeMode();
+
+  resultEditorInstance = editor;
+  resultEditorInstance.className += "result_editor";
 
   resultEditorInstance.setValue('/*\n  RESULT WINDOW:\n   Write your XShade program in the editor to the left and click "Run". \n   Compilation results will then be displayed here.\n*/', 1);
   resultEditorInstance.setReadOnly(true);
@@ -73380,6 +73382,12 @@ var create = function create() {
         var header = this.props.header;
         var content = this.props.content;
 
+        // <div className="left_block">             
+        //   <h1>Quick Guide</h1>
+        //   <span>
+        //     To be done but will be awesome!
+        //   </span>
+        // </div>
         return _react2.default.createElement(
           Container,
           { className: 'playground_container' },
@@ -73390,41 +73398,35 @@ var create = function create() {
           ),
           _react2.default.createElement(
             'div',
-            { className: 'left_block' },
-            _react2.default.createElement(
-              'h1',
-              null,
-              'Quick Guide'
-            ),
-            _react2.default.createElement(
-              'span',
-              null,
-              'To be done but will be awesome!'
-            )
-          ),
-          _react2.default.createElement(
-            'div',
             { id: 'editor_container', className: 'right_block' },
             _react2.default.createElement(
               'div',
               { id: 'editor_toolbar', className: 'editor_toolbar' },
               _react2.default.createElement('input', { type: 'button', id: 'xshade_compile', className: 'editor_toolbar_button', value: 'Run' })
             ),
-            _react2.default.createElement(_reactAce.split, {
+            _react2.default.createElement(_reactAce2.default, {
               theme: 'tomorrow',
-              className: 'editor_instance',
-              name: 'UNIQUE_ID_OF_DIV',
+              className: 'input_editor_instance',
+              name: 'input_editor_instance',
               mode: 'rust',
-              splits: 2,
-              orientation: 'beside',
-              onLoad: onEditorLoad,
+              onLoad: onInputEditorLoad,
               onChange: onEditorChange,
               editorProps: { $blockScrolling: true },
-              width: 'auto',
+              width: '49%',
               height: '600px',
-              ref: function ref(split) {
-                editorComponent = split;
-              }
+              ref: 'inputEditor'
+            }),
+            _react2.default.createElement(_reactAce2.default, {
+              theme: 'tomorrow',
+              className: 'result_editor_instance',
+              name: 'result_editor_instance',
+              mode: 'rust',
+              onLoad: onResultEditorLoad,
+              onChange: onEditorChange,
+              editorProps: { $blockScrolling: true },
+              width: '49%',
+              height: '600px',
+              ref: 'resultEditor'
             })
           ),
           _react2.default.createElement(RenderedScene, { 'class': 'emscripten', id: 'canvas', oncontextmenu: 'event.preventDefault()' })
