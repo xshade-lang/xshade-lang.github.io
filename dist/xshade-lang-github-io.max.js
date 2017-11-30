@@ -73388,6 +73388,7 @@ var create = function create() {
         //     To be done but will be awesome!
         //   </span>
         // </div>
+        // <RenderedScene class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" />
         return _react2.default.createElement(
           Container,
           { className: 'playground_container' },
@@ -73412,7 +73413,7 @@ var create = function create() {
               onLoad: onInputEditorLoad,
               onChange: onEditorChange,
               editorProps: { $blockScrolling: true },
-              width: '49%',
+              width: '50%',
               height: '600px',
               ref: 'inputEditor'
             }),
@@ -73424,12 +73425,11 @@ var create = function create() {
               onLoad: onResultEditorLoad,
               onChange: onEditorChange,
               editorProps: { $blockScrolling: true },
-              width: '49%',
+              width: '50%',
               height: '600px',
               ref: 'resultEditor'
             })
-          ),
-          _react2.default.createElement(RenderedScene, { 'class': 'emscripten', id: 'canvas', oncontextmenu: 'event.preventDefault()' })
+          )
         );
       }
     }]);

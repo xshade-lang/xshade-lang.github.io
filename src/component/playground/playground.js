@@ -163,6 +163,7 @@ const create = () => class Playground extends Component {
   //     To be done but will be awesome!
   //   </span>
   // </div>
+  // <RenderedScene class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" />
     return (
       <Container className="playground_container">        
         <Header>
@@ -182,7 +183,7 @@ const create = () => class Playground extends Component {
               editorProps={
                 {$blockScrolling: true}
               }
-              width="49%"
+              width="50%"
               height="600px"
               ref="inputEditor"
             />  
@@ -196,12 +197,11 @@ const create = () => class Playground extends Component {
               editorProps={
                 {$blockScrolling: true}
               }
-              width="49%"
+              width="50%"
               height="600px"
               ref="resultEditor"
             />             
         </div>        
-        <RenderedScene class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" />
       </Container>
     );
   }

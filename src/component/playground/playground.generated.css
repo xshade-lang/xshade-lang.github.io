@@ -151,6 +151,7 @@
 
 .input_editor_instance, .result_editor_instance {
   display: inline-block;
-  width: 50%; }
+  width: 50%;
+  min-height: 600px; }
 
 /*# sourceMappingURL=playground.generated.css.map */
