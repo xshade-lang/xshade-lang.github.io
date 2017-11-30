@@ -73177,7 +73177,7 @@ exports.default = create;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-var program = "struct Vec4 {\n    x: f32,\n    y: f32,\n    z: f32,\n    w: f32,\n}\n\nfn vec4(x: f32, y: f32, z: f32, w: f32) -> Vec4 {\n    return Vec4 {\n    x: x,\n    y: y,\n    z: z,\n    w: w,\n    };\n}\n\nfn main() -> Vec4 {\n    return vec4(0.0, 0.0, 0.0, 0.0);\n}\n";
+var program = "struct VertexInput {\n\tposition: vec4,\n    color: vec4,\n}\n\nstruct VertexOutput {\n    position: vec4,\n    color: vec4,\n}\n\nfn vertex_main(in: VertexInput) -> VertexOutput {\n    return VertexOutput {\n        position: in.position,\n        color:    in.color,\n    };\n}\n\nprogram VertexColored {\n    stage vertex(in: VertexInput) -> VertexOutput {\n        return vertex_main(in);\n    }\n\n    stage fragment(in: VertexOutput) -> vec4 {\n        return in.color;\n    }\n}";
 
 exports.program = program;
 

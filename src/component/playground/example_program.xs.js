@@ -1,23 +1,29 @@
 const program =
-`struct Vec4 {
-    x: f32,
-    y: f32,
-    z: f32,
-    w: f32,
+`struct VertexInput {
+	position: vec4,
+    color: vec4,
 }
 
-fn vec4(x: f32, y: f32, z: f32, w: f32) -> Vec4 {
-    return Vec4 {
-    x: x,
-    y: y,
-    z: z,
-    w: w,
+struct VertexOutput {
+    position: vec4,
+    color: vec4,
+}
+
+fn vertex_main(in: VertexInput) -> VertexOutput {
+    return VertexOutput {
+        position: in.position,
+        color:    in.color,
     };
 }
 
-fn main() -> Vec4 {
-    return vec4(0.0, 0.0, 0.0, 0.0);
-}
-`;
+program VertexColored {
+    stage vertex(in: VertexInput) -> VertexOutput {
+        return vertex_main(in);
+    }
+
+    stage fragment(in: VertexOutput) -> vec4 {
+        return in.color;
+    }
+}`;
 
 export {program};
