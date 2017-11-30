@@ -141,7 +141,7 @@ const create = () => class Playground extends Component {
   }
 
   componentDidUpdate() {
-    this.updateDimensions();
+    console.log("Update done");
   }
 
   componentWillUnmount() {
@@ -180,7 +180,7 @@ const create = () => class Playground extends Component {
               editorProps={
                 {$blockScrolling: true}
               }
-              width="100%"
+              width="auto"
               height="600px"
               ref={(split) => { editorComponent = split; }}
             />           

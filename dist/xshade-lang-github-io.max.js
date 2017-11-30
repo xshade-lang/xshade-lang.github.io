@@ -73366,7 +73366,7 @@ var create = function create() {
     }, {
       key: 'componentDidUpdate',
       value: function componentDidUpdate() {
-        this.updateDimensions();
+        console.log("Update done");
       }
     }, {
       key: 'componentWillUnmount',
@@ -73420,7 +73420,7 @@ var create = function create() {
               onLoad: onEditorLoad,
               onChange: onEditorChange,
               editorProps: { $blockScrolling: true },
-              width: '100%',
+              width: 'auto',
               height: '600px',
               ref: function ref(split) {
                 editorComponent = split;
