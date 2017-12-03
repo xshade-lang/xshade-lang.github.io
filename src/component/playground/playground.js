@@ -4,6 +4,9 @@ import brace     from 'brace';
 import {split as SplitEditor} from 'react-ace';
 import AceEditor from 'react-ace';
 
+import TabEditorComponent  from '../tabbed_editor/TabEditorComponent';
+import PaneComponent from '../tabbed_editor/PaneComponent';
+
 import styled from 'styled-components';
 import { Quicksand } from '../../style/font';
 
@@ -82,9 +85,15 @@ function onResultEditorLoad(editor) {
   
 }
 
+var currentInputEditor = ...;
 
 function onEditorChange({ newValue }) {
   // currentEditorContents = newValue;
+}
+
+function onTabEditorSelectedChanged(newIndex) {
+  // currentEditorContents = newValue;
+  console.log("New tab index: " + newIndex );
 }
 
 var editorContainer = null;
@@ -101,7 +110,6 @@ const create = () => class Playground extends Component {
 
   updateDimensions() {
     // Kanonen auf Spatzen... Yep, I'm annoyed...
-    splitEditorInstance.resize();
     inputEditorInstance.resize();
     resultEditorInstance.resize();
   }
@@ -168,25 +176,49 @@ const create = () => class Playground extends Component {
       <Container className="playground_container">        
         <Header>
           {header}
-        </Header>        
+        </Header> 
+                  
         <div  id="editor_container" className="right_block">
             <div id="editor_toolbar" className="editor_toolbar">
               <input type="button" id="xshade_compile" className="editor_toolbar_button" value="Run" />
             </div>
-            <AceEditor
-              theme="tomorrow"
-              className="input_editor_instance"
-              name="input_editor_instance"
-              mode="rust"            
-              onLoad={onInputEditorLoad}
-              onChange={onEditorChange}
-              editorProps={
-                {$blockScrolling: true}
-              }
-              width="50%"
-              height="600px"
-              ref="inputEditor"
-            />  
+            <div className="tabbed_editor_container">
+              <TabEditorComponent selected={0} onSelectedChanged={onTabEditorSelectedChanged}>
+                <PaneComponent label="Tab 1">
+                  <AceEditor
+                    theme="tomorrow"
+                    className="input_editor_instance"
+                    name="input_editor_instance"
+                    mode="rust"            
+                    onLoad={onInputEditorLoad}
+                    onChange={onEditorChange}
+                    editorProps={
+                      {$blockScrolling: true}
+                    }
+                    width="100%"
+                    height="600px"
+                    ref="inputEditor"
+                  />  
+                </PaneComponent>
+                <PaneComponent label="Tab 2">
+                  <AceEditor
+                    theme="tomorrow"
+                    className="input_editor_instance_2"
+                    name="input_editor_instance_2"
+                    mode="rust"            
+                    onLoad={onInputEditorLoad}
+                    onChange={onEditorChange}
+                    editorProps={
+                      {$blockScrolling: true}
+                    }
+                    width="100%"
+                    height="600px"
+                    ref="inputEditor"
+                  />  
+                </PaneComponent>
+              </TabEditorComponent>
+            </div>
+            
             <AceEditor
               theme="tomorrow"
               className="result_editor_instance"
@@ -201,7 +233,7 @@ const create = () => class Playground extends Component {
               height="600px"
               ref="resultEditor"
             />             
-        </div>        
+        </div>
       </Container>
     );
   }

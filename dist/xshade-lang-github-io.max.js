@@ -73171,7 +73171,7 @@ var create = function create(TopNav, Playground) {
 
 exports.default = create;
 
-},{"../style/responsive":307,"react":217,"styled-components":223}],301:[function(require,module,exports){
+},{"../style/responsive":309,"react":217,"styled-components":223}],301:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -73209,6 +73209,14 @@ var _brace2 = _interopRequireDefault(_brace);
 var _reactAce = require('react-ace');
 
 var _reactAce2 = _interopRequireDefault(_reactAce);
+
+var _TabEditorComponent = require('../tabbed_editor/TabEditorComponent');
+
+var _TabEditorComponent2 = _interopRequireDefault(_TabEditorComponent);
+
+var _PaneComponent = require('../tabbed_editor/PaneComponent');
+
+var _PaneComponent2 = _interopRequireDefault(_PaneComponent);
 
 var _styledComponents = require('styled-components');
 
@@ -73300,6 +73308,11 @@ function onEditorChange(_ref) {
   var newValue = _ref.newValue;
 }
 
+function onTabEditorSelectedChanged(newIndex) {
+  // currentEditorContents = newValue;
+  console.log("New tab index: " + newIndex);
+}
+
 var editorContainer = null;
 var editorComponent = null;
 
@@ -73322,7 +73335,6 @@ var create = function create() {
       key: 'updateDimensions',
       value: function updateDimensions() {
         // Kanonen auf Spatzen... Yep, I'm annoyed...
-        splitEditorInstance.resize();
         inputEditorInstance.resize();
         resultEditorInstance.resize();
       }
@@ -73405,18 +73417,46 @@ var create = function create() {
               { id: 'editor_toolbar', className: 'editor_toolbar' },
               _react2.default.createElement('input', { type: 'button', id: 'xshade_compile', className: 'editor_toolbar_button', value: 'Run' })
             ),
-            _react2.default.createElement(_reactAce2.default, {
-              theme: 'tomorrow',
-              className: 'input_editor_instance',
-              name: 'input_editor_instance',
-              mode: 'rust',
-              onLoad: onInputEditorLoad,
-              onChange: onEditorChange,
-              editorProps: { $blockScrolling: true },
-              width: '50%',
-              height: '600px',
-              ref: 'inputEditor'
-            }),
+            _react2.default.createElement(
+              'div',
+              { className: 'tabbed_editor_container' },
+              _react2.default.createElement(
+                _TabEditorComponent2.default,
+                { selected: 0, onSelectedChanged: onTabEditorSelectedChanged },
+                _react2.default.createElement(
+                  _PaneComponent2.default,
+                  { label: 'Tab 1' },
+                  _react2.default.createElement(_reactAce2.default, {
+                    theme: 'tomorrow',
+                    className: 'input_editor_instance',
+                    name: 'input_editor_instance',
+                    mode: 'rust',
+                    onLoad: onInputEditorLoad,
+                    onChange: onEditorChange,
+                    editorProps: { $blockScrolling: true },
+                    width: '100%',
+                    height: '600px',
+                    ref: 'inputEditor'
+                  })
+                ),
+                _react2.default.createElement(
+                  _PaneComponent2.default,
+                  { label: 'Tab 2' },
+                  _react2.default.createElement(_reactAce2.default, {
+                    theme: 'tomorrow',
+                    className: 'input_editor_instance_2',
+                    name: 'input_editor_instance_2',
+                    mode: 'rust',
+                    onLoad: onInputEditorLoad,
+                    onChange: onEditorChange,
+                    editorProps: { $blockScrolling: true },
+                    width: '100%',
+                    height: '600px',
+                    ref: 'inputEditor'
+                  })
+                )
+              )
+            ),
             _react2.default.createElement(_reactAce2.default, {
               theme: 'tomorrow',
               className: 'result_editor_instance',
@@ -73441,7 +73481,186 @@ var create = function create() {
 exports.default = create;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../../editor/mode/xshade":1,"../../../editor/theme/xshade":2,"../../style/font":306,"./example_program.xs":301,"brace":4,"brace/ext/split":3,"brace/mode/rust":5,"brace/theme/monokai":6,"brace/theme/tomorrow":7,"react":217,"react-ace":11,"react-dom":27,"styled-components":223}],303:[function(require,module,exports){
+},{"../../../editor/mode/xshade":1,"../../../editor/theme/xshade":2,"../../style/font":308,"../tabbed_editor/PaneComponent":303,"../tabbed_editor/TabEditorComponent":304,"./example_program.xs":301,"brace":4,"brace/ext/split":3,"brace/mode/rust":5,"brace/theme/monokai":6,"brace/theme/tomorrow":7,"react":217,"react-ace":11,"react-dom":27,"styled-components":223}],303:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactDom = require('react-dom');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var PaneComponent = function (_React$Component) {
+    _inherits(PaneComponent, _React$Component);
+
+    function PaneComponent() {
+        _classCallCheck(this, PaneComponent);
+
+        return _possibleConstructorReturn(this, (PaneComponent.__proto__ || Object.getPrototypeOf(PaneComponent)).apply(this, arguments));
+    }
+
+    _createClass(PaneComponent, [{
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                null,
+                this.props.children
+            );
+        }
+    }]);
+
+    return PaneComponent;
+}(_react2.default.Component);
+
+exports.default = PaneComponent;
+;
+
+PaneComponent.propTypes = {
+    label: _react2.default.PropTypes.string.isRequired,
+    children: _react2.default.PropTypes.element.isRequired
+};
+
+},{"react":217,"react-dom":27}],304:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactDom = require('react-dom');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var TabEditorComponent = function (_React$Component) {
+    _inherits(TabEditorComponent, _React$Component);
+
+    function TabEditorComponent(props) {
+        _classCallCheck(this, TabEditorComponent);
+
+        var _this = _possibleConstructorReturn(this, (TabEditorComponent.__proto__ || Object.getPrototypeOf(TabEditorComponent)).call(this, props));
+
+        _this.state = {
+            selected: 0,
+            displayClassName: "tabs_content_inactive"
+        };
+        return _this;
+    }
+
+    _createClass(TabEditorComponent, [{
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            this.state.selected = this.props.selected;
+        }
+    }, {
+        key: 'handleTabClick',
+        value: function handleTabClick(index, event) {
+            var _this2 = this;
+
+            event.preventDefault();
+            this.setState({
+                selected: index
+            }, function () {
+                if (_this2.props.onSelectedChanged) _this2.props.onSelectedChanged(_this2.state.selected);
+            });
+        }
+    }, {
+        key: '_renderTitles',
+        value: function _renderTitles() {
+            var _this3 = this;
+
+            return _react2.default.createElement(
+                'ul',
+                { className: 'tabs_labels' },
+                _react2.default.Children.map(this.props.children, function (child, i) {
+                    return _react2.default.createElement(
+                        'li',
+                        { className: 'tabs_labels_item ' + (i == _this3.state.selected ? 'content_active' : 'content_inactive'), key: i },
+                        _react2.default.createElement(
+                            'a',
+                            { href: '#',
+                                className: i == _this3.state.selected ? 'active' : '',
+                                onClick: _this3.handleTabClick.bind(_this3, i) },
+                            child.props.label
+                        )
+                    );
+                })
+            );
+        }
+    }, {
+        key: '_renderContent',
+        value: function _renderContent() {
+            var _this4 = this;
+
+            return _react2.default.createElement(
+                'div',
+                { className: 'tabs_content' },
+                _react2.default.Children.map(this.props.children, function (child, i) {
+                    return _react2.default.createElement(
+                        'div',
+                        { className: 'wrapper searchDiv ' + (i == _this4.state.selected ? 'tabs_content_active' : 'tabs_content_inactive') },
+                        child
+                    );
+                })
+            );
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                { className: 'tabs' },
+                this._renderTitles(),
+                this._renderContent()
+            );
+        }
+    }]);
+
+    return TabEditorComponent;
+}(_react2.default.Component);
+
+exports.default = TabEditorComponent;
+;
+
+TabEditorComponent.propTypes = {
+    selected: _react2.default.PropTypes.number,
+    onSelectedChanged: _react2.default.PropTypes.func,
+    children: _react2.default.PropTypes.oneOfType([_react2.default.PropTypes.array, _react2.default.PropTypes.element]).isRequired
+};
+
+TabEditorComponent.defaultProps = {
+    selected: 0,
+    onSelectedChanged: null,
+    children: []
+};
+
+},{"react":217,"react-dom":27}],305:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73544,7 +73763,7 @@ var create = function create() {
 
 exports.default = create;
 
-},{"../style/color":305,"../style/font":306,"react":217,"styled-components":223}],304:[function(require,module,exports){
+},{"../style/color":307,"../style/font":308,"react":217,"styled-components":223}],306:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -73584,7 +73803,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   render();
 })(window);
 
-},{"./component/main-layout":300,"./component/playground/playground":302,"./component/top-nav":303,"react":217,"react-dom":27}],305:[function(require,module,exports){
+},{"./component/main-layout":300,"./component/playground/playground":302,"./component/top-nav":305,"react":217,"react-dom":27}],307:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73602,7 +73821,7 @@ var BrightAzure = exports.BrightAzure = '#2df5ec';
 var LightBlue = exports.LightBlue = '#CCEEFF';
 var Apricot = exports.Apricot = '#FFCC99';
 
-},{}],306:[function(require,module,exports){
+},{}],308:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73612,7 +73831,7 @@ var PtSans = exports.PtSans = '\'PT Sans\', sans-serif';
 var Quicksand = exports.Quicksand = '\'Quicksand\', sans-serif';
 var Hack = exports.Hack = '\'Hack\', monospace';
 
-},{}],307:[function(require,module,exports){
+},{}],309:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -73623,4 +73842,4 @@ var Tablet = exports.Tablet = '(min-width: 768px) and (max-width: 991px)';
 var Laptop = exports.Laptop = '(min-width: 992px) and (max-width: 1199px)';
 var Desktop = exports.Desktop = '(min-width: 1200px)';
 
-},{}]},{},[304]);
+},{}]},{},[306]);
