@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import {render}  from 'react-dom';
+import {render as renderReactDOM}  from 'react-dom';
 import brace     from 'brace';
 import {split as SplitEditor} from 'react-ace';
-import AceEditor from 'react-ace';
+import AceEditor, {AceEditorProps} from 'react-ace';
 
 import TabEditorComponent  from '../tabbed_editor/TabEditorComponent';
 import PaneComponent from '../tabbed_editor/PaneComponent';
@@ -17,9 +17,10 @@ import 'brace/theme/tomorrow';
 import '../../../editor/mode/xshade';
 import '../../../editor/theme/xshade';
 
-import {program} from './example_program.xs'
+import {program as default_program} from './example_program.xs'
 
 import 'brace/ext/split'
+import LinkedList from '../tabbed_editor/LinkedList';
 ace.acequire(['ace/split'], function(s) { brace.Split = s.Split; })
 
 const Container = styled.div`
@@ -47,71 +48,88 @@ class XShadeMode extends ace.acequire('ace/mode/rust').Mode {
 	}
 }
 
-var splitEditorInstance   = null;
-var inputEditorInstance   = null;
-var resultEditorInstance  = null;
-
-var currentEditorContents = "";
-
-function onInputEditorLoad(editor) {
-  const customMode = new XShadeMode();
-
-  inputEditorInstance = editor;
-  inputEditorInstance.className  += "input_editor";
-
-  inputEditorInstance.setValue(program, 1 /* Move cursor to end */);
-  inputEditorInstance.getSession().setMode(customMode);
-
-  inputEditorInstance.focus();
-  // inputEditorInstance.setHighlightSelectedWord(true);
-  inputEditorInstance.setHighlightActiveLine(true);
-
-}
-
-function onResultEditorLoad(editor) {
-  const customMode = new XShadeMode();
-
-  resultEditorInstance = editor;
-  resultEditorInstance.className += "result_editor";
-
-  resultEditorInstance.setValue(
-`/*
-  RESULT WINDOW:
-   Write your XShade program in the editor to the left and click \"Run\". 
-   Compilation results will then be displayed here.
-*/`
-    , 1);
-  resultEditorInstance.setReadOnly(true);
-  
-}
-
-var currentInputEditor = ...;
-
-function onEditorChange({ newValue }) {
-  // currentEditorContents = newValue;
-}
-
-function onTabEditorSelectedChanged(newIndex) {
-  // currentEditorContents = newValue;
-  console.log("New tab index: " + newIndex );
-}
-
 var editorContainer = null;
 var editorComponent = null;
+
+class Allocator { 
+  constructor(capacity) {
+    this.state = {
+      capacity:    capacity,
+      free_list:   new LinkedList(capacity),
+      locked_list: new LinkedList(capacity),
+    }
+
+    for(let k=0; k<capacity; ++k) {
+      let node = { 
+        success: false,
+        data: null
+      };
+
+      this.state.free_list.push_back(node);
+    }
+  }
+
+  alloc() {
+    if(this.state.free_list.listSize === 0 || this.state.locked_list.depleted())
+      return null;
+
+    let node = { 
+      success: false,
+      data: null
+    };
+
+    if(!this.state.free_list.pop_back(node)) {
+      console.log("Cannot pop from free list in allocator.");
+      return null; 
+    }
+
+    if(!this.state.locked_list.push_back(node)) { 
+      console.log("Cannot push to locked list in allocator.");
+      return null;
+    }
+
+    return node.data;
+  }
+
+  dealloc(data) { 
+    let node = { 
+      success: false,
+      data: data
+    };
+
+    if(!this.state.locked_list.remove_if(node)) {
+      console.log("Cannot remove data from allocator. Unmanaged data?");
+      return;
+    }
+  
+    if(!this.state.free_list.push_back(node)) {
+      console.log("Cannot push data to free_list in allocator.");
+      return;
+    }
+  }
+}
 
 const create = () => class Playground extends Component {
   constructor(props) {
     super(props);
 
+    let max_tabs = 10;
+
+    this.resultEditorInstance  = null;  
+    this.currentEditorData     = null;
+
     this.state = {
-      data: []
+      editorData: [],
+      max_tabs: max_tabs,
+      allocator: new Allocator(max_tabs),
     };
   }
 
   updateDimensions() {
-    // Kanonen auf Spatzen... Yep, I'm annoyed...
-    inputEditorInstance.resize();
-    resultEditorInstance.resize();
+    Object.keys(this.state.editorData).map((key) => {
+      this.state.editorData[key].editorInstance.resize();
+    });
+    this.resultEditorInstance.resize();
   }
 
   componentDidMount(nextProps, nextState) {
@@ -139,7 +157,7 @@ const create = () => class Playground extends Component {
         var moduleCode        = inputEditorInstance.getValue();      
         var invokeXSCWithCode = Module.cwrap('xsc_call_w_code', 'string', ['string']);
         
-        resultEditorInstance.setValue(invokeXSCWithCode(moduleCode), 1);
+        this.resultEditorInstance.setValue(invokeXSCWithCode(moduleCode), 1);
 
         // Deactivated until we have a god damn beautifier rule set :D
 
@@ -160,10 +178,109 @@ const create = () => class Playground extends Component {
     window.removeEventListener("resize", this.updateDimensions.bind(this));
   }
 
+  onInputEditorLoad(editor, id) {  
+    console.log("Loading editor: " + id + "!");
+
+    const customMode = new XShadeMode();
+    
+    this.state.editorData[id].editorInstance = editor;
+    editor.className += "input_editor";        
+    editor.getSession().setMode(customMode);        
+    editor.focus();
+    // inputEditorInstance.setHighlightSelectedWord(true);
+    editor.setHighlightActiveLine(true);
+    editor.setValue(default_program, 1);
+  }
+
+  onResultEditorLoad(editor) {
+    const customMode = new XShadeMode();
+
+    this.resultEditorInstance = editor;
+    this.resultEditorInstance.className += "result_editor";
+
+    this.resultEditorInstance.setValue(
+  `/*
+    RESULT WINDOW:
+    Write your XShade program in the editor to the left and click \"Run\". 
+    Compilation results will then be displayed here.
+  */`
+      , 1);
+      this.resultEditorInstance.setReadOnly(true);
+  }
+
+  onEditorChange( id, newValue ) {
+    this.state.editorData[id].value          = newValue;
+    this.state.editorData[id].cursorPosition = this.state.editorData[id].editorInstance.getCursorPosition();
+    this.setState({editorData: this.state.editorData});
+  }
+  
+  onResultEditorChange( newValue ) {
+    // Do nothing...
+  }
+
+  onTabEditorSelectedChanged(instance, newIndex, id) {
+    return instance.onTabEditorSelectedChangedImpl(newIndex, id);
+  }
+
+  onTabEditorSelectedChangedImpl(newIndex, id) {
+    // currentEditorContents = newValue;
+    console.log("New tab (" + id + ") index: " + newIndex );
+
+    this.state.editorData[id].editorInstance.focus();
+    
+    // if(newIndex < 0) {
+    //   this.currentEditorData = null;
+    //   this.inputEditorInstance.setValue("// Enter XShade-Code here", 1);
+    //   return;
+    // }
+    //if(this.currentEditorData && this.currentEditorData.value)
+     // this.inputEditorInstance.setValue(this.currentEditorData.value, 1);
+  }
+
+  onTabEditorCreateTabRequest(instance, name) {
+    return instance.onTabEditorCreateTabRequestImpl(name);
+  }
+
+  onTabEditorCreateTabRequestImpl(name) {
+    let newEditorData = this.state.allocator.alloc();
+    if(!newEditorData) {
+      // Error or allocator depleted!
+      return null;
+    }
+
+    const tab_id  = name.replace(/\s/g, "") + '_' + Math.floor((Math.random() * 100000) + 1);
+
+    newEditorData.name  = name;
+    newEditorData.id    = tab_id;
+    newEditorData.value = default_program;
+    this.state.editorData[tab_id] = newEditorData;
+
+    this.setState({editorData: this.state.editorData});
+
+    const tab = {
+      tab_id: tab_id,
+      name:   newEditorData.name,
+    }
+    return (tab);
+  }
+
+  onTabEditorClose(instance, id) { 
+    return instance.onTabEditorCloseImpl(id);
+  }
+
+  onTabEditorCloseImpl(id) {
+    console.log("Deleting tab " + id);
+    this.state.allocator.dealloc(this.state.editorData[id]);
+    delete this.state.editorData[id];
+    this.setState({editorData: this.state.editorData});
+  }
+
   render() {
 
     const header  = this.props.header;
     const content = this.props.content;
+
+    console.log("Rendering playground");
 
   // <div className="left_block">             
   //   <h1>Quick Guide</h1>
@@ -183,39 +300,34 @@ const create = () => class Playground extends Component {
               <input type="button" id="xshade_compile" className="editor_toolbar_button" value="Run" />
             </div>
             <div className="tabbed_editor_container">
-              <TabEditorComponent selected={0} onSelectedChanged={onTabEditorSelectedChanged}>
-                <PaneComponent label="Tab 1">
+              <TabEditorComponent 
+                id="TabHolder"
+                selected={0} 
+                max_tabs={this.state.max_tabs}
+                onCreateTab={(id, name) => { return this.onTabEditorCreateTabRequest(this, id, name); }}
+                onSelectedChanged={(index, id) => { return this.onTabEditorSelectedChanged(this, index, id); }}
+                onCloseTab={(id) => { return this.onTabEditorClose(this, id); }} >
+                {Object.keys(this.state.editorData).map((data, index) => 
                   <AceEditor
                     theme="tomorrow"
-                    className="input_editor_instance"
+                    key={data}
+                    className={"input_editor_instance " + "input_editor_" + data}
                     name="input_editor_instance"
                     mode="rust"            
-                    onLoad={onInputEditorLoad}
-                    onChange={onEditorChange}
+                    onLoad={(editor) => { this.onInputEditorLoad(editor, data); }}
+                    onChange={(newValue) => { this.onEditorChange(data, newValue); }}
                     editorProps={
                       {$blockScrolling: true}
                     }
                     width="100%"
                     height="600px"
-                    ref="inputEditor"
-                  />  
-                </PaneComponent>
-                <PaneComponent label="Tab 2">
-                  <AceEditor
-                    theme="tomorrow"
-                    className="input_editor_instance_2"
-                    name="input_editor_instance_2"
-                    mode="rust"            
-                    onLoad={onInputEditorLoad}
-                    onChange={onEditorChange}
-                    editorProps={
-                      {$blockScrolling: true}
-                    }
-                    width="100%"
-                    height="600px"
-                    ref="inputEditor"
-                  />  
-                </PaneComponent>
+                    value={this.state.editorData[data].value}
+                    cursorStart={this.state.editorData[data].cursorPosition}
+                    ref={data}
+                    assigned_tab_id={data}
+                    assigned_name={this.state.editorData[data].name}
+                  />
+                )}
               </TabEditorComponent>
             </div>
             
@@ -224,8 +336,8 @@ const create = () => class Playground extends Component {
               className="result_editor_instance"
               name="result_editor_instance"
               mode="rust"            
-              onLoad={onResultEditorLoad}
-              onChange={onEditorChange}
+              onLoad={(editor) => { this.onResultEditorLoad(editor); }}
+              onChange={(newValue) => { this.onResultEditorChange(newValue); }}
               editorProps={
                 {$blockScrolling: true}
               }

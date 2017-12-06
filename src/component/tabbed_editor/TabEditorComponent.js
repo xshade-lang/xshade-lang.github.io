@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
-import {render}  from 'react-dom';
+import {render as renderReactDOM}  from 'react-dom';
+import createFragment from 'react-addons-create-fragment';
+
+import PaneComponent from './PaneComponent';
+import LinkedList from './LinkedList';
 
 export default class TabEditorComponent extends React.Component {
     constructor(props) {
@@ -7,21 +11,71 @@ export default class TabEditorComponent extends React.Component {
         this.state = {
             selected: 0,
             displayClassName: "tabs_content_inactive",
+            max_tabs: 10,
+            tabs: [],
         }
+    }
+
+    get selectedIndex() {
+        return this.state.selected;
     }
 
     componentDidMount() {        
         this.state.selected = this.props.selected;
+        this.state.max_tabs = this.props.max_tabs;
     }
 
-    handleTabClick(index, event) {
+    appendTab(named) {
+        if(Object.keys(this.state.tabs).length == this.state.max_tabs) {
+            // No more tabs allowed
+            alert("The maximum of " + this.state.max_tabs + " is reached.");
+            return;
+        }
+        
+        const tab = this.props.onCreateTab(named);
+
+        this.state.tabs.push(tab);
+        this.setState(
+            {
+                selected: this.state.tabs.length - 1, 
+                tabs: this.state.tabs
+            },
+            () => { 
+                if(this.props.onSelectedChanged)
+                    this.props.onSelectedChanged(this.state.selected, tab.tab_id);
+            });
+    }
+
+    handleTabClick(index, id, event) {
+        let tab_id = id;
+
         event.preventDefault();
         this.setState({
           selected: index
         }, () => { 
             if(this.props.onSelectedChanged)
-                this.props.onSelectedChanged(this.state.selected);
+                this.props.onSelectedChanged(this.state.selected, tab_id);
         });        
+    }
+
+    handleTabCloseClick(index, id, event) { 
+        event.preventDefault();
+
+        this.props.onCloseTab(id);
+
+        if(this.state.tabs[index].tab_id == id) {
+            let tab = this.state.tabs[index];
+            let sel = 0;
+            let selectedChanged = this.onSelectedChanged;
+
+            this.state.tabs.splice(index, 1);
+            this.setState({
+                selected: 0
+            }, () => { 
+                if(selectedChanged)
+                    selectedChanged(sel, tab.tab_id);
+            });
+        }
     }
 
     _renderTitles() {
@@ -29,18 +83,27 @@ export default class TabEditorComponent extends React.Component {
           <ul className="tabs_labels">           
             {React.Children.map(this.props.children, (child, i) => 
                 <li className={'tabs_labels_item ' + ((i == this.state.selected) ? 'content_active' : 'content_inactive')} key={i}>
-                    <a href="#" 
-                        className={((i == this.state.selected) ? 'active' : '')}
-                        onClick={this.handleTabClick.bind(this, i)}>
-                        {child.props.label}
-                    </a>
+                    <div>
+                        <a href="#" 
+                            className={`tabs_labels_item_name ` + ((i == this.state.selected) ? 'active' : '')}
+                            onClick={this.handleTabClick.bind(this, i, child.props.assigned_tab_id)}>
+                            {child.props.assigned_tab_id}
+                        </a>
+                        <a href="#" className="tabs_labels_item_close" onClick={this.handleTabCloseClick.bind(this, i, child.props.assigned_tab_id)}>
+                            X
+                        </a>
+                    </div>
                 </li>
             )}
+            <li className="tabs_add_tab">
+                <a href="#" onClick={this.appendTab.bind(this, "New Tab")}>+</a>
+            </li>
           </ul>
         );
     }
 
-    _renderContent() {
+    _renderContent() { 
+        console.log(this.props.children);
         return (         
             <div className="tabs_content">
                 {React.Children.map(this.props.children, (child, i) => 
@@ -53,18 +116,22 @@ export default class TabEditorComponent extends React.Component {
     }
 
     render() {
-      return (
-        <div className="tabs">
-            {this._renderTitles()}
-            {this._renderContent()}
-        </div>
+        console.log("Rendering tabs");
+        return (
+            <div className="tabs">
+                {this._renderTitles()}
+                {this._renderContent()}
+            </div>
       );
     }
 };
 
 TabEditorComponent.propTypes = {
     selected: React.PropTypes.number,
+    max_tabs: React.PropTypes.number.isRequired,
     onSelectedChanged: React.PropTypes.func,
+    onCreateTab: React.PropTypes.func.isRequired,
+    onCloseTab: React.PropTypes.func.isRequired,
     children: React.PropTypes.oneOfType([
         React.PropTypes.array,
         React.PropTypes.element
@@ -73,6 +140,9 @@ TabEditorComponent.propTypes = {
 
 TabEditorComponent.defaultProps = {
     selected: 0,
+    max_tabs: 10,
     onSelectedChanged: null,
+    onCreateTab: null,
+    onCloseTab: null,
     children: []
 };

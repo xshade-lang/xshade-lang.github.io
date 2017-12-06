@@ -169,17 +169,19 @@
   border: 1px solid black; }
 
 .tabs_labels_item {
-  min-width: 75px;
   float: left;
   font-family: monospace;
   background-color: #aaaaaa; }
 
 .tabs_labels_item a {
-  display: block;
+  display: inline-block;
   color: white;
   text-align: center;
   padding: 5px;
   text-decoration: none; }
+
+.tabs_labels_item_name, .tabs_labels_item_close {
+  display: inline-block; }
 
 .tabs_labels_item.content_active a {
   background-color: #A00000;
