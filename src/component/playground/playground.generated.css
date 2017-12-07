@@ -1,3 +1,6 @@
+div.clear {
+  clear: both; }
+
 .wheel, .wheel_umbrella, .wheel_color, .wheel_label {
   content: "";
   position: absolute;
@@ -155,18 +158,24 @@
   width: 50%; }
 
 .tabbed_editor_container {
-  display: inline-block;
+  float: left;
   width: 50%;
-  margin-top: 20px;
   min-height: 600px; }
 
 .tabs_labels {
+  vertical-align: top;
   list-style-type: none;
   margin: 0;
   padding: 0;
   overflow: hidden;
   background-color: white;
   border: 1px solid black; }
+
+.tabs_add_tab {
+  vertical-align: top;
+  float: right;
+  margin-left: 5px;
+  margin-right: 5px; }
 
 .tabs_labels_item {
   float: left;

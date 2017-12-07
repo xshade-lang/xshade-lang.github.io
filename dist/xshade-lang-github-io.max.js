@@ -73709,11 +73709,16 @@ var create = function create() {
 
       var max_tabs = 10;
 
-      _this2.resultEditorInstance = null;
-      _this2.currentEditorData = null;
-
       _this2.state = {
         editorData: [],
+        resultEditorData: [{
+          name: "",
+          id: "",
+          value: "",
+          cursorPosition: null,
+          editorInstance: null
+        }],
+        selectedId: -1,
         max_tabs: max_tabs,
         allocator: new Allocator(max_tabs)
       };
@@ -73726,9 +73731,11 @@ var create = function create() {
         var _this3 = this;
 
         Object.keys(this.state.editorData).map(function (key) {
-          _this3.state.editorData[key].editorInstance.resize();
+          if (_this3.state.editorData[key].editorInstance) _this3.state.editorData[key].editorInstance.resize();
         });
-        this.resultEditorInstance.resize();
+        if (this.state.resultEditorData && this.state.resultEditorData[0] && this.state.resultEditorData[0].editorInstance) {
+          this.state.resultEditorData[0].editorInstance.resize();
+        }
       }
     }, {
       key: 'componentDidMount',
@@ -73752,22 +73759,32 @@ var create = function create() {
         global.document.body.appendChild(wasm_adapter_script);
         global.document.head.appendChild(playground_css);
 
+        var pg = this;
+
         var btnXSC = document.getElementById("xshade_compile");
         btnXSC.onclick = function () {
-          var moduleCode = inputEditorInstance.getValue();
-          var invokeXSCWithCode = Module.cwrap('xsc_call_w_code', 'string', ['string']);
-
-          this.resultEditorInstance.setValue(invokeXSCWithCode(moduleCode), 1);
-
-          // Deactivated until we have a god damn beautifier rule set :D
-
-          // var beautify = ace.acequire("ace/ext/beautify"); // get reference to extension
-          // beautify.beautify(editorInstance.session);
+          pg.handleRunRequest();
         };
+
+        this.refs.TabEditorComponent.appendTab("main");
 
         // Manullay trigger resize event to have the editors be resized appropriately.
         this.updateDimensions();
         window.dispatchEvent(new Event("resize"));
+      }
+    }, {
+      key: 'handleRunRequest',
+      value: function handleRunRequest() {
+
+        var moduleCode = this.state.editorData[this.state.selectedId].editorInstance.getValue();
+        var invokeXSCWithCode = Module.cwrap('xsc_call_w_code', 'string', ['string']);
+
+        this.state.resultEditorData[0].editorInstance.setValue(invokeXSCWithCode(moduleCode), 1);
+
+        // Deactivated until we have a god damn beautifier rule set :D
+
+        // var beautify = ace.acequire("ace/ext/beautify"); // get reference to extension
+        // beautify.beautify(editorInstance.session);
       }
     }, {
       key: 'componentDidUpdate',
@@ -73797,13 +73814,18 @@ var create = function create() {
     }, {
       key: 'onResultEditorLoad',
       value: function onResultEditorLoad(editor) {
+        this.state.resultEditorData[0].name = "ResultEditor";
+        this.state.resultEditorData[0].id = "ResultEditor_TabIdDefault_1337";
+        this.state.resultEditorData[0].value = '/*\n  RESULT WINDOW:\n  Write your XShade program in the editor to the left and click "Run". \n  Compilation results will then be displayed here.\n  */';
+
         var customMode = new XShadeMode();
 
-        this.resultEditorInstance = editor;
-        this.resultEditorInstance.className += "result_editor";
+        this.state.resultEditorData[0].editorInstance = editor;
+        this.state.resultEditorData[0].cursorPosition = this.state.resultEditorData[0].editorInstance.getCursorPosition();
+        this.state.resultEditorData[0].editorInstance.className += "result_editor";
 
-        this.resultEditorInstance.setValue('/*\n    RESULT WINDOW:\n    Write your XShade program in the editor to the left and click "Run". \n    Compilation results will then be displayed here.\n  */', 1);
-        this.resultEditorInstance.setReadOnly(true);
+        this.state.resultEditorData[0].editorInstance.setValue(this.state.resultEditorData[0].value, 1);
+        this.state.resultEditorData[0].editorInstance.setReadOnly(true);
       }
     }, {
       key: 'onEditorChange',
@@ -73815,7 +73837,8 @@ var create = function create() {
     }, {
       key: 'onResultEditorChange',
       value: function onResultEditorChange(newValue) {
-        // Do nothing...
+        this.state.resultEditorData[0].value = newValue;
+        this.state.resultEditorData[0].cursorPosition = this.state.resultEditorData[0].editorInstance.getCursorPosition();
       }
     }, {
       key: 'onTabEditorSelectedChanged',
@@ -73828,6 +73851,7 @@ var create = function create() {
         // currentEditorContents = newValue;
         console.log("New tab (" + id + ") index: " + newIndex);
 
+        this.state.selectedId = id;
         this.state.editorData[id].editorInstance.focus();
 
         // if(newIndex < 0) {
@@ -73920,6 +73944,7 @@ var create = function create() {
                 _TabEditorComponent2.default,
                 {
                   id: 'TabHolder',
+                  ref: 'TabEditorComponent',
                   selected: 0,
                   max_tabs: this.state.max_tabs,
                   onCreateTab: function onCreateTab(id, name) {
@@ -73968,10 +73993,13 @@ var create = function create() {
                 _this4.onResultEditorChange(newValue);
               },
               editorProps: { $blockScrolling: true },
+              value: this.state.resultEditorData[0].value,
+              cursorStart: this.state.resultEditorData[0].cursorPosition,
               width: '50%',
               height: '600px',
               ref: 'resultEditor'
-            })
+            }),
+            _react2.default.createElement('div', { className: 'clear' })
           )
         );
       }
@@ -74353,6 +74381,15 @@ var TabEditorComponent = function (_React$Component) {
             return _react2.default.createElement(
                 'ul',
                 { className: 'tabs_labels' },
+                _react2.default.createElement(
+                    'li',
+                    { className: 'tabs_add_tab' },
+                    _react2.default.createElement(
+                        'a',
+                        { href: '#', onClick: this.appendTab.bind(this, "New Tab " + this.props.children.length) },
+                        '+'
+                    )
+                ),
                 _react2.default.Children.map(this.props.children, function (child, i) {
                     return _react2.default.createElement(
                         'li',
@@ -74374,16 +74411,7 @@ var TabEditorComponent = function (_React$Component) {
                             )
                         )
                     );
-                }),
-                _react2.default.createElement(
-                    'li',
-                    { className: 'tabs_add_tab' },
-                    _react2.default.createElement(
-                        'a',
-                        { href: '#', onClick: this.appendTab.bind(this, "New Tab") },
-                        '+'
-                    )
-                )
+                })
             );
         }
     }, {

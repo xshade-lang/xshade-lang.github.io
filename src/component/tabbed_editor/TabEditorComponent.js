@@ -80,7 +80,10 @@ export default class TabEditorComponent extends React.Component {
 
     _renderTitles() {
         return (
-          <ul className="tabs_labels">           
+          <ul className="tabs_labels">  
+            <li className="tabs_add_tab">
+                <a href="#" onClick={this.appendTab.bind(this, "New Tab " + this.props.children.length)}>+</a>
+            </li>         
             {React.Children.map(this.props.children, (child, i) => 
                 <li className={'tabs_labels_item ' + ((i == this.state.selected) ? 'content_active' : 'content_inactive')} key={i}>
                     <div>
@@ -95,9 +98,7 @@ export default class TabEditorComponent extends React.Component {
                     </div>
                 </li>
             )}
-            <li className="tabs_add_tab">
-                <a href="#" onClick={this.appendTab.bind(this, "New Tab")}>+</a>
-            </li>
+            
           </ul>
         );
     }

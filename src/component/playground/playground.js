@@ -115,11 +115,16 @@ const create = () => class Playground extends Component {
 
     let max_tabs = 10;
 
-    this.resultEditorInstance  = null;  
-    this.currentEditorData     = null;
-
     this.state = {
       editorData: [],
+      resultEditorData: [{ 
+        name: "",
+        id: "",
+        value: "",
+        cursorPosition: null,
+        editorInstance: null
+      }],
+      selectedId: -1,
       max_tabs: max_tabs,
       allocator: new Allocator(max_tabs),
     };
@@ -127,9 +132,14 @@ const create = () => class Playground extends Component {
 
   updateDimensions() {
     Object.keys(this.state.editorData).map((key) => {
-      this.state.editorData[key].editorInstance.resize();
+      if(this.state.editorData[key].editorInstance) 
+        this.state.editorData[key].editorInstance.resize();
     });
-    this.resultEditorInstance.resize();
+    if(this.state.resultEditorData
+       && this.state.resultEditorData[0]
+       && this.state.resultEditorData[0].editorInstance) {
+      this.state.resultEditorData[0].editorInstance.resize();
+    }
   }
 
   componentDidMount(nextProps, nextState) {
@@ -152,22 +162,29 @@ const create = () => class Playground extends Component {
     global.document.body.appendChild(wasm_adapter_script);
     global.document.head.appendChild(playground_css);  
     
+    let pg = this;
+
     var btnXSC = document.getElementById("xshade_compile");
-    btnXSC.onclick = function () {  
-        var moduleCode        = inputEditorInstance.getValue();      
-        var invokeXSCWithCode = Module.cwrap('xsc_call_w_code', 'string', ['string']);
-        
-        this.resultEditorInstance.setValue(invokeXSCWithCode(moduleCode), 1);
+    btnXSC.onclick = function () { pg.handleRunRequest(); };
 
-        // Deactivated until we have a god damn beautifier rule set :D
-
-        // var beautify = ace.acequire("ace/ext/beautify"); // get reference to extension
-        // beautify.beautify(editorInstance.session);
-    };
+    this.refs.TabEditorComponent.appendTab("main");
 
     // Manullay trigger resize event to have the editors be resized appropriately.
     this.updateDimensions();
     window.dispatchEvent(new Event("resize"));
+  }
+
+  handleRunRequest() { 
+    
+    var moduleCode        = this.state.editorData[this.state.selectedId].editorInstance.getValue();      
+    var invokeXSCWithCode = Module.cwrap('xsc_call_w_code', 'string', ['string']);
+    
+    this.state.resultEditorData[0].editorInstance.setValue(invokeXSCWithCode(moduleCode), 1);
+
+    // Deactivated until we have a god damn beautifier rule set :D
+
+    // var beautify = ace.acequire("ace/ext/beautify"); // get reference to extension
+    // beautify.beautify(editorInstance.session);
   }
 
   componentDidUpdate() {
@@ -193,19 +210,23 @@ const create = () => class Playground extends Component {
   }
 
   onResultEditorLoad(editor) {
+    this.state.resultEditorData[0].name  = "ResultEditor";
+    this.state.resultEditorData[0].id    = "ResultEditor_TabIdDefault_1337";
+    this.state.resultEditorData[0].value = 
+  `/*
+  RESULT WINDOW:
+  Write your XShade program in the editor to the left and click \"Run\". 
+  Compilation results will then be displayed here.
+  */`;
+
     const customMode = new XShadeMode();
 
-    this.resultEditorInstance = editor;
-    this.resultEditorInstance.className += "result_editor";
+    this.state.resultEditorData[0].editorInstance = editor;
+    this.state.resultEditorData[0].cursorPosition = this.state.resultEditorData[0].editorInstance.getCursorPosition();
+    this.state.resultEditorData[0].editorInstance.className += "result_editor";
 
-    this.resultEditorInstance.setValue(
-  `/*
-    RESULT WINDOW:
-    Write your XShade program in the editor to the left and click \"Run\". 
-    Compilation results will then be displayed here.
-  */`
-      , 1);
-      this.resultEditorInstance.setReadOnly(true);
+    this.state.resultEditorData[0].editorInstance.setValue(this.state.resultEditorData[0].value , 1);
+    this.state.resultEditorData[0].editorInstance.setReadOnly(true);
   }
 
   onEditorChange( id, newValue ) {
@@ -215,7 +236,8 @@ const create = () => class Playground extends Component {
   }
   
   onResultEditorChange( newValue ) {
-    // Do nothing...
+    this.state.resultEditorData[0].value          = newValue;
+    this.state.resultEditorData[0].cursorPosition = this.state.resultEditorData[0].editorInstance.getCursorPosition();
   }
 
   onTabEditorSelectedChanged(instance, newIndex, id) {
@@ -226,6 +248,7 @@ const create = () => class Playground extends Component {
     // currentEditorContents = newValue;
     console.log("New tab (" + id + ") index: " + newIndex );
 
+    this.state.selectedId = id;
     this.state.editorData[id].editorInstance.focus();
     
     // if(newIndex < 0) {
@@ -302,6 +325,7 @@ const create = () => class Playground extends Component {
             <div className="tabbed_editor_container">
               <TabEditorComponent 
                 id="TabHolder"
+                ref="TabEditorComponent"
                 selected={0} 
                 max_tabs={this.state.max_tabs}
                 onCreateTab={(id, name) => { return this.onTabEditorCreateTabRequest(this, id, name); }}
@@ -341,10 +365,13 @@ const create = () => class Playground extends Component {
               editorProps={
                 {$blockScrolling: true}
               }
+              value={this.state.resultEditorData[0].value}
+              cursorStart={this.state.resultEditorData[0].cursorPosition}
               width="50%"
               height="600px"
               ref="resultEditor"
-            />             
+            />        
+            <div className="clear" />     
         </div>
       </Container>
     );
