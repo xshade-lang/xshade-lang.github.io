@@ -14,13 +14,13 @@ export default class LinkedList {
         return (this.size == this.capacity);
     }
 
-    push_back(data, unique) { 
+    push_back(in_node, unique) { 
         if(this.capacity > 0 && this.size === this.capacity) {
             return false;
         }
 
         const node = { 
-            data: data,
+            data: in_node.data,
             next: null
         }
 
@@ -28,7 +28,7 @@ export default class LinkedList {
             this.head = node;
         } else { 
             if(unique) { 
-                if(contains_value(data)) {
+                if(contains_value(in_node)) {
                     return false;
                 }
             }
@@ -42,10 +42,10 @@ export default class LinkedList {
         return true;
     }
 
-    pop_back(data) { 
+    pop_back(in_node) { 
         if(this.size > 0) {
             if(this.size === 1) {
-                data.data = this.head.data;
+                in_node.data = this.head.data;
 
                 this.head = null;
                 this.tail = null;
@@ -55,30 +55,30 @@ export default class LinkedList {
                     current_node = current_node.next;
                 }                
 
-                data.data = current_node.next.data;
+                in_node.data = current_node.next.data;
                 current_node.next = null;
                 this.tail = current_node;
             }
 
             --(this.size);
 
-            return (data.success = true);
+            return (in_node.success = true);
         } else {
             return false;
         }
     }
 
-    push_front(data, unique) {        
+    push_front(in_node, unique) {        
         if(this.capacity > 0 && this.size === this.capacity) {
             return false;
         }
         
-        if(contains_value(data)) {
+        if(contains_value(in_node)) {
             return false;
         }
         
         const node = {
-            data: data,
+            data: in_node.data,
             next: null
         }
 
@@ -95,9 +95,9 @@ export default class LinkedList {
         return true;
     }
 
-    pop_front(data) { 
+    pop_front(in_node) { 
         if(this.size > 0) {
-            data.data = this.head.data;
+            in_node.data = this.head.data;
 
             this.head = this.head.next;
             --(this.size);
@@ -106,19 +106,19 @@ export default class LinkedList {
                 this.tail = null;
             }
 
-            return (data.success = true);
+            return (in_node.success = true);
         }
 
         return false;
     }
 
-    contains_value(data) {         
+    contains_value(in_node) {         
         let current_node = this.head;
-        if(current_node.data === data) {
+        if(current_node.data === in_node.data) {
             return true;
         } else {            
             while(current_node.next !== null) {
-                if(current_node.next.data === data) {
+                if(current_node.next.data === in_node.data) {
                     return true;
                 }
 
@@ -129,31 +129,32 @@ export default class LinkedList {
         return false;
     }
 
-    remove_if(data) { 
+    remove_if(in_node) { 
         if(this.size > 0) {
             let current_node = this.head;
-            if(current_node.data === data) {
-                pop_front(data);
+            if(current_node.data == in_node.data) {
+                pop_front(in_node);
                 return true;
             }
 
             while(current_node.next !== null) {
-                if(current_node.next.data === data) {
+                if(current_node.next.data === in_node.data) {
                     if(current_node.next === this.tail) {
-                        pop_back(data);
+                        pop_back(in_node);
                     } else {
                         let source = current_node;
                         let rm     = current_node.next;
                         let target = rm.next;
 
-                        data.data = rm.data;
+                        in_node.data = rm.data;
 
                         source.next = target;
                         rm = null;
                         --(this.size);
                     }
 
-                    return (data.success = true);
+                    in_node.success = true;
+                    return true;
                 }
 
                 current_node = current_node.next;

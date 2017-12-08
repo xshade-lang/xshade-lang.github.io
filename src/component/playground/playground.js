@@ -51,64 +51,6 @@ class XShadeMode extends ace.acequire('ace/mode/rust').Mode {
 var editorContainer = null;
 var editorComponent = null;
 
-class Allocator { 
-  constructor(capacity) {
-    this.state = {
-      capacity:    capacity,
-      free_list:   new LinkedList(capacity),
-      locked_list: new LinkedList(capacity),
-    }
-
-    for(let k=0; k<capacity; ++k) {
-      let node = { 
-        success: false,
-        data: null
-      };
-
-      this.state.free_list.push_back(node);
-    }
-  }
-
-  alloc() {
-    if(this.state.free_list.listSize === 0 || this.state.locked_list.depleted())
-      return null;
-
-    let node = { 
-      success: false,
-      data: null
-    };
-
-    if(!this.state.free_list.pop_back(node)) {
-      console.log("Cannot pop from free list in allocator.");
-      return null; 
-    }
-
-    if(!this.state.locked_list.push_back(node)) { 
-      console.log("Cannot push to locked list in allocator.");
-      return null;
-    }
-
-    return node.data;
-  }
-
-  dealloc(data) { 
-    let node = { 
-      success: false,
-      data: data
-    };
-
-    if(!this.state.locked_list.remove_if(node)) {
-      console.log("Cannot remove data from allocator. Unmanaged data?");
-      return;
-    }
-  
-    if(!this.state.free_list.push_back(node)) {
-      console.log("Cannot push data to free_list in allocator.");
-      return;
-    }
-  }
-}
-
 const create = () => class Playground extends Component {
   constructor(props) {
     super(props);
@@ -125,8 +67,7 @@ const create = () => class Playground extends Component {
         editorInstance: null
       }],
       selectedId: -1,
-      max_tabs: max_tabs,
-      allocator: new Allocator(max_tabs),
+      max_tabs: max_tabs
     };
   }
 
@@ -265,24 +206,26 @@ const create = () => class Playground extends Component {
   }
 
   onTabEditorCreateTabRequestImpl(name) {
-    let newEditorData = this.state.allocator.alloc();
-    if(!newEditorData) {
-      // Error or allocator depleted!
-      return null;
-    }
+    let editorData = {
+      name: null,
+      id: null,
+      value: "",
+      cursorPosition: 0,
+      editorInstance: null
+    };
 
     const tab_id  = name.replace(/\s/g, "") + '_' + Math.floor((Math.random() * 100000) + 1);
 
-    newEditorData.name  = name;
-    newEditorData.id    = tab_id;
-    newEditorData.value = default_program;
-    this.state.editorData[tab_id] = newEditorData;
+    editorData.name  = name;
+    editorData.id    = tab_id;
+    editorData.value = default_program;
+    this.state.editorData[tab_id] = editorData;
 
     this.setState({editorData: this.state.editorData});
 
     const tab = {
       tab_id: tab_id,
-      name:   newEditorData.name,
+      name:   editorData.name,
     }
     return (tab);
   }
@@ -293,7 +236,6 @@ const create = () => class Playground extends Component {
 
   onTabEditorCloseImpl(id) {
     console.log("Deleting tab " + id);
-    this.state.allocator.dealloc(this.state.editorData[id]);
     delete this.state.editorData[id];
     this.setState({editorData: this.state.editorData});
   }

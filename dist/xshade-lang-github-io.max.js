@@ -73633,71 +73633,6 @@ var XShadeMode = function (_ace$acequire$Mode) {
 var editorContainer = null;
 var editorComponent = null;
 
-var Allocator = function () {
-  function Allocator(capacity) {
-    _classCallCheck(this, Allocator);
-
-    this.state = {
-      capacity: capacity,
-      free_list: new _LinkedList2.default(capacity),
-      locked_list: new _LinkedList2.default(capacity)
-    };
-
-    for (var k = 0; k < capacity; ++k) {
-      var node = {
-        success: false,
-        data: null
-      };
-
-      this.state.free_list.push_back(node);
-    }
-  }
-
-  _createClass(Allocator, [{
-    key: 'alloc',
-    value: function alloc() {
-      if (this.state.free_list.listSize === 0 || this.state.locked_list.depleted()) return null;
-
-      var node = {
-        success: false,
-        data: null
-      };
-
-      if (!this.state.free_list.pop_back(node)) {
-        console.log("Cannot pop from free list in allocator.");
-        return null;
-      }
-
-      if (!this.state.locked_list.push_back(node)) {
-        console.log("Cannot push to locked list in allocator.");
-        return null;
-      }
-
-      return node.data;
-    }
-  }, {
-    key: 'dealloc',
-    value: function dealloc(data) {
-      var node = {
-        success: false,
-        data: data
-      };
-
-      if (!this.state.locked_list.remove_if(node)) {
-        console.log("Cannot remove data from allocator. Unmanaged data?");
-        return;
-      }
-
-      if (!this.state.free_list.push_back(node)) {
-        console.log("Cannot push data to free_list in allocator.");
-        return;
-      }
-    }
-  }]);
-
-  return Allocator;
-}();
-
 var create = function create() {
   return function (_Component) {
     _inherits(Playground, _Component);
@@ -73719,8 +73654,7 @@ var create = function create() {
           editorInstance: null
         }],
         selectedId: -1,
-        max_tabs: max_tabs,
-        allocator: new Allocator(max_tabs)
+        max_tabs: max_tabs
       };
       return _this2;
     }
@@ -73870,24 +73804,26 @@ var create = function create() {
     }, {
       key: 'onTabEditorCreateTabRequestImpl',
       value: function onTabEditorCreateTabRequestImpl(name) {
-        var newEditorData = this.state.allocator.alloc();
-        if (!newEditorData) {
-          // Error or allocator depleted!
-          return null;
-        }
+        var editorData = {
+          name: null,
+          id: null,
+          value: "",
+          cursorPosition: 0,
+          editorInstance: null
+        };
 
         var tab_id = name.replace(/\s/g, "") + '_' + Math.floor(Math.random() * 100000 + 1);
 
-        newEditorData.name = name;
-        newEditorData.id = tab_id;
-        newEditorData.value = _example_program.program;
-        this.state.editorData[tab_id] = newEditorData;
+        editorData.name = name;
+        editorData.id = tab_id;
+        editorData.value = _example_program.program;
+        this.state.editorData[tab_id] = editorData;
 
         this.setState({ editorData: this.state.editorData });
 
         var tab = {
           tab_id: tab_id,
-          name: newEditorData.name
+          name: editorData.name
         };
         return tab;
       }
@@ -73900,7 +73836,6 @@ var create = function create() {
       key: 'onTabEditorCloseImpl',
       value: function onTabEditorCloseImpl(id) {
         console.log("Deleting tab " + id);
-        this.state.allocator.dealloc(this.state.editorData[id]);
         delete this.state.editorData[id];
         this.setState({ editorData: this.state.editorData });
       }
@@ -74040,13 +73975,13 @@ var LinkedList = function () {
         }
     }, {
         key: "push_back",
-        value: function push_back(data, unique) {
+        value: function push_back(in_node, unique) {
             if (this.capacity > 0 && this.size === this.capacity) {
                 return false;
             }
 
             var node = {
-                data: data,
+                data: in_node.data,
                 next: null
             };
 
@@ -74054,7 +73989,7 @@ var LinkedList = function () {
                 this.head = node;
             } else {
                 if (unique) {
-                    if (contains_value(data)) {
+                    if (contains_value(in_node)) {
                         return false;
                     }
                 }
@@ -74069,10 +74004,10 @@ var LinkedList = function () {
         }
     }, {
         key: "pop_back",
-        value: function pop_back(data) {
+        value: function pop_back(in_node) {
             if (this.size > 0) {
                 if (this.size === 1) {
-                    data.data = this.head.data;
+                    in_node.data = this.head.data;
 
                     this.head = null;
                     this.tail = null;
@@ -74082,31 +74017,31 @@ var LinkedList = function () {
                         current_node = current_node.next;
                     }
 
-                    data.data = current_node.next.data;
+                    in_node.data = current_node.next.data;
                     current_node.next = null;
                     this.tail = current_node;
                 }
 
                 --this.size;
 
-                return data.success = true;
+                return in_node.success = true;
             } else {
                 return false;
             }
         }
     }, {
         key: "push_front",
-        value: function push_front(data, unique) {
+        value: function push_front(in_node, unique) {
             if (this.capacity > 0 && this.size === this.capacity) {
                 return false;
             }
 
-            if (contains_value(data)) {
+            if (contains_value(in_node)) {
                 return false;
             }
 
             var node = {
-                data: data,
+                data: in_node.data,
                 next: null
             };
 
@@ -74124,9 +74059,9 @@ var LinkedList = function () {
         }
     }, {
         key: "pop_front",
-        value: function pop_front(data) {
+        value: function pop_front(in_node) {
             if (this.size > 0) {
-                data.data = this.head.data;
+                in_node.data = this.head.data;
 
                 this.head = this.head.next;
                 --this.size;
@@ -74135,20 +74070,20 @@ var LinkedList = function () {
                     this.tail = null;
                 }
 
-                return data.success = true;
+                return in_node.success = true;
             }
 
             return false;
         }
     }, {
         key: "contains_value",
-        value: function contains_value(data) {
+        value: function contains_value(in_node) {
             var current_node = this.head;
-            if (current_node.data === data) {
+            if (current_node.data === in_node.data) {
                 return true;
             } else {
                 while (current_node.next !== null) {
-                    if (current_node.next.data === data) {
+                    if (current_node.next.data === in_node.data) {
                         return true;
                     }
 
@@ -74160,31 +74095,32 @@ var LinkedList = function () {
         }
     }, {
         key: "remove_if",
-        value: function remove_if(data) {
+        value: function remove_if(in_node) {
             if (this.size > 0) {
                 var current_node = this.head;
-                if (current_node.data === data) {
-                    pop_front(data);
+                if (current_node.data == in_node.data) {
+                    pop_front(in_node);
                     return true;
                 }
 
                 while (current_node.next !== null) {
-                    if (current_node.next.data === data) {
+                    if (current_node.next.data === in_node.data) {
                         if (current_node.next === this.tail) {
-                            pop_back(data);
+                            pop_back(in_node);
                         } else {
                             var source = current_node;
                             var rm = current_node.next;
                             var target = rm.next;
 
-                            data.data = rm.data;
+                            in_node.data = rm.data;
 
                             source.next = target;
                             rm = null;
                             --this.size;
                         }
 
-                        return data.success = true;
+                        in_node.success = true;
+                        return true;
                     }
 
                     current_node = current_node.next;
@@ -74358,18 +74294,21 @@ var TabEditorComponent = function (_React$Component) {
         value: function handleTabCloseClick(index, id, event) {
             event.preventDefault();
 
-            this.props.onCloseTab(id);
-
             if (this.state.tabs[index].tab_id == id) {
+                this.props.onCloseTab(id);
+
                 var tab = this.state.tabs[index];
                 var sel = 0;
-                var selectedChanged = this.onSelectedChanged;
+                var tid = tab.tab_id;
 
                 this.state.tabs.splice(index, 1);
+                var selectedChanged = this.onSelectedChanged;
+
                 this.setState({
-                    selected: 0
+                    selected: 0,
+                    tabs: this.state.tabs
                 }, function () {
-                    if (selectedChanged) selectedChanged(sel, tab.tab_id);
+                    if (selectedChanged) selectedChanged(sel, tid);
                 });
             }
         }

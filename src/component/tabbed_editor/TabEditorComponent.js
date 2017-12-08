@@ -61,19 +61,22 @@ export default class TabEditorComponent extends React.Component {
     handleTabCloseClick(index, id, event) { 
         event.preventDefault();
 
-        this.props.onCloseTab(id);
-
         if(this.state.tabs[index].tab_id == id) {
+            this.props.onCloseTab(id);
+            
             let tab = this.state.tabs[index];
             let sel = 0;
-            let selectedChanged = this.onSelectedChanged;
+            let tid = tab.tab_id;
 
             this.state.tabs.splice(index, 1);
+            let selectedChanged = this.onSelectedChanged;
+
             this.setState({
-                selected: 0
+                selected: 0,
+                tabs: this.state.tabs
             }, () => { 
                 if(selectedChanged)
-                    selectedChanged(sel, tab.tab_id);
+                    selectedChanged(sel, tid);
             });
         }
     }
