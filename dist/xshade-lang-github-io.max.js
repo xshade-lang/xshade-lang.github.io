@@ -73642,7 +73642,7 @@ var create = function create() {
 
       var _this2 = _possibleConstructorReturn(this, (Playground.__proto__ || Object.getPrototypeOf(Playground)).call(this, props));
 
-      var max_tabs = 10;
+      var max_tabs = 6;
 
       _this2.state = {
         editorData: [],

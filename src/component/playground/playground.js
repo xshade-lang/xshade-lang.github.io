@@ -55,7 +55,7 @@ const create = () => class Playground extends Component {
   constructor(props) {
     super(props);
 
-    let max_tabs = 10;
+    let max_tabs = 6;
 
     this.state = {
       editorData: [],
